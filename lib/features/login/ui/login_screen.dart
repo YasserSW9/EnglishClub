@@ -1,167 +1,214 @@
-import 'package:english_club/core/helpers/extensions.dart';
-import 'package:english_club/core/helpers/spacing.dart';
-import 'package:english_club/core/routing/routes.dart';
-import 'package:english_club/core/themeing/font_weight_helper.dart';
-import 'package:english_club/core/widgets/app_text_button.dart';
-import 'package:english_club/core/widgets/app_text_form_field.dart';
+import 'package:flutter/material.dart';
+
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
 import 'package:english_club/features/login/ui/widgets/login_bloc_listener.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
 
   @override
-  State<Loginscreen> createState() => _LoginscreenState();
+  State<Loginscreen> createState() => _LoginScreenState();
 }
 
-class _LoginscreenState extends State<Loginscreen> {
-  bool isObscureText = true;
+class _LoginScreenState extends State<Loginscreen> {
   @override
   Widget build(BuildContext context) {
-    final loginCubit = context.read<LoginCubit>();
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              verticalSpacing(70),
-              Center(
-                child: Text(
-                  "Login",
+      backgroundColor: const Color(0xFF5D2E8E), // لون الخلفية الأرجواني
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/auth.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // الخلفية مع نص "LEARN"
+          Positioned.fill(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // يمكنك استبدال هذا بنص "LEARN" أو صورة إذا أردت
+                // للحصول على تأثير يشبه تصميمك، يمكن استخدام Text أو Image
+                const SizedBox(height: 20),
+                const Text(
+                  'Swipe up',
                   style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 55.sp,
+                    color: Colors.white,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              verticalSpacing(20),
-              Center(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 75.w),
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    "You must Login to your account to continue",
-                    style: TextStyle(color: Colors.black87, fontSize: 20.sp),
-                  ),
+                const Text(
+                  'To signin to the english world',
+                  style: TextStyle(color: Colors.white70, fontSize: 18),
                 ),
-              ),
-              verticalSpacing(50),
-              Container(
-                child: Text("Username", style: TextStyle(fontSize: 15.sp)),
-                margin: EdgeInsets.symmetric(horizontal: 30.w),
-              ),
-              Form(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 15.w),
-                  child: AppTextFormField(
-                    controller: loginCubit.emailController,
+                const SizedBox(height: 50), // مسافة لتحديد مكان السهم
+                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
+                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
+                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
+              ],
+            ),
+          ),
 
-                    hintText: "Enter your username",
-                    backgroundColor: Colors.white,
-                    contentPadding: EdgeInsets.all(20),
-                  ),
+          // واجهة تسجيل الدخو
+          DraggableScrollableSheet(
+            initialChildSize: 0.1, // الحجم الأولي عند الفتح (10% من الشاشة)
+            minChildSize:
+                0.1, // الحد الأدنى لحجم السحب (لا يمكن إخفاؤه بالكامل)
+            maxChildSize: 0.8, // الحد الأقصى لحجم السحب (80% من الشاشة)
+            builder: (BuildContext context, ScrollController scrollController) {
+              bool isObscureText = true;
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-              ),
-              verticalSpacing(10.h),
-              Container(
-                child: Text("Password", style: TextStyle(fontSize: 15.sp)),
-                margin: EdgeInsets.symmetric(horizontal: 30.w),
-              ),
-              Form(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 15.w),
-                  child: AppTextFormField(
-                    controller: loginCubit.passwordController,
-                    isObscureText: isObscureText,
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isObscureText = !isObscureText;
-                        });
-                      },
-                      child: Icon(
-                        isObscureText ? Icons.visibility_off : Icons.visibility,
-                      ),
-                    ),
-                    hintText: "Enter your Password",
-                    backgroundColor: Colors.white,
-                    contentPadding: EdgeInsets.all(20),
-                  ),
-                ),
-              ),
-              verticalSpacing(50.h),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 30.w),
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.center,
-                child: AppTextButton(
-                  borderRadius: 500,
-                  buttonWidth: 200.w,
-                  buttonText: "Login",
-                  textStyle: TextStyle(fontSize: 18.sp, color: Colors.white),
-                  onPressed: () {
-                    context.read<LoginCubit>().emitloginloaded();
-                    // context.pushNamed(Routes.homeScreen);
-                  },
-                  backgroundColor: Colors.blue,
-                ),
-              ),
-              verticalSpacing(35.h),
-              Divider(color: Colors.black),
-              Container(
-                child: Center(
-                  child: Text(
-                    "If you Dont Have An Email",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeightHelper.regular,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                ),
-              ),
-              verticalSpacing(20),
-              Container(
-                alignment: Alignment.bottomCenter,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                margin: EdgeInsets.symmetric(horizontal: 115.w),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Icon(Icons.message, color: Colors.white),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: MaterialButton(
-                        splashColor: Colors.blue,
-                        onPressed: () {},
-                        child: Text(
-                          "Contact Us",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        // مقبض السحب
+                        Container(
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                      ),
-                      flex: 2,
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        Form(
+                          child: TextFormField(
+                            controller: context
+                                .read<LoginCubit>()
+                                .emailController,
+                            decoration: InputDecoration(
+                              labelText: 'username',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              prefixIcon: const Icon(Icons.person),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Form(
+                          child: TextFormField(
+                            obscureText: true,
+                            controller: context
+                                .read<LoginCubit>()
+                                .passwordController,
+
+                            decoration: InputDecoration(
+                              labelText: 'password',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              prefixIcon: const Icon(Icons.lock),
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isObscureText = !isObscureText;
+                                  });
+                                },
+                                child: Icon(
+                                  isObscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<LoginCubit>().emitloginloaded();
+
+                              // قم بتنفيذ منطق تسجيل الدخول هنا
+                              print('Sign In button pressed');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(
+                                0xFF5D2E8E,
+                              ), // لون الزر
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Or',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // قم بتنفيذ منطق "Contact us" هنا
+                              print('Contact us button pressed');
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              side: const BorderSide(color: Color(0xFF5D2E8E)),
+                            ),
+                            icon: const Icon(
+                              Icons.mail_outline,
+                              color: Color(0xFF5D2E8E),
+                            ),
+                            label: const Text(
+                              'Contact us',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xFF5D2E8E),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              LoginBlocListener(),
-            ],
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+              );
+            },
           ),
-        ),
+
+          LoginBlocListener(),
+        ],
       ),
     );
   }
