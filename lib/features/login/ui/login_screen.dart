@@ -52,7 +52,7 @@ class _LoginscreenState extends State<Loginscreen> {
               ),
               verticalSpacing(50),
               Container(
-                child: Text("Email", style: TextStyle(fontSize: 15.sp)),
+                child: Text("Username", style: TextStyle(fontSize: 15.sp)),
                 margin: EdgeInsets.symmetric(horizontal: 30.w),
               ),
               Form(
@@ -61,7 +61,7 @@ class _LoginscreenState extends State<Loginscreen> {
                   child: AppTextFormField(
                     controller: loginCubit.emailController,
 
-                    hintText: "Enter your e-mail",
+                    hintText: "Enter your username",
                     backgroundColor: Colors.white,
                     contentPadding: EdgeInsets.all(20),
                   ),
