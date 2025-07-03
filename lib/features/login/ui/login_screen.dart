@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
 import 'package:english_club/features/login/ui/widgets/login_bloc_listener.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:english_club/features/login/ui/widgets/whatsapp_launcher.dart'; // Import the new file
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -12,27 +13,32 @@ class Loginscreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<Loginscreen> {
+  final _formKey = GlobalKey<FormState>();
+  bool isObscureText = true;
+
+  // Define the WhatsApp number here
+  final String supportPhoneNumber =
+      '963937637222'; // Replace with your desired WhatsApp number (without '+')
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF5D2E8E), // لون الخلفية الأرجواني
+      backgroundColor: const Color(0xFF5D2E8E), // ل
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/auth.jpg"),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // الخلفية مع نص "LEARN"
+          // ا
           Positioned.fill(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // يمكنك استبدال هذا بنص "LEARN" أو صورة إذا أردت
-                // للحصول على تأثير يشبه تصميمك، يمكن استخدام Text أو Image
                 const SizedBox(height: 20),
                 const Text(
                   'Swipe up',
@@ -46,22 +52,33 @@ class _LoginScreenState extends State<Loginscreen> {
                   'To signin to the english world',
                   style: TextStyle(color: Colors.white70, fontSize: 18),
                 ),
-                const SizedBox(height: 50), // مسافة لتحديد مكان السهم
-                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
-                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
-                Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 50),
+                const SizedBox(height: 50),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                  size: 50,
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                  size: 50,
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                  size: 50,
+                ),
               ],
             ),
           ),
 
-          // واجهة تسجيل الدخو
+          // واجهة تسجيل الدخول
           DraggableScrollableSheet(
             initialChildSize: 0.1, // الحجم الأولي عند الفتح (10% من الشاشة)
             minChildSize:
                 0.1, // الحد الأدنى لحجم السحب (لا يمكن إخفاؤه بالكامل)
             maxChildSize: 0.8, // الحد الأقصى لحجم السحب (80% من الشاشة)
             builder: (BuildContext context, ScrollController scrollController) {
-              bool isObscureText = true;
               return Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
@@ -95,46 +112,99 @@ class _LoginScreenState extends State<Loginscreen> {
                         ),
                         const SizedBox(height: 30),
                         Form(
-                          child: TextFormField(
-                            controller: context
-                                .read<LoginCubit>()
-                                .emailController,
-                            decoration: InputDecoration(
-                              labelText: 'username',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              prefixIcon: const Icon(Icons.person),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Form(
-                          child: TextFormField(
-                            obscureText: true,
-                            controller: context
-                                .read<LoginCubit>()
-                                .passwordController,
-
-                            decoration: InputDecoration(
-                              labelText: 'password',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    isObscureText = !isObscureText;
-                                  });
-                                },
-                                child: Icon(
-                                  isObscureText
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                          key: _formKey, // Assign the form key here
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: context
+                                    .read<LoginCubit>()
+                                    .emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'username',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  prefixIcon: const Icon(Icons.person),
+                                  errorBorder: OutlineInputBorder(
+                                    // Define error border
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    // Define focused error border
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Username cannot be empty';
+                                  }
+                                  if (value.length < 4) {
+                                    return 'Username must be at least 4 characters long';
+                                  }
+                                  return null;
+                                },
                               ),
-                            ),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                obscureText:
+                                    isObscureText, // Use the state variable here
+                                controller: context
+                                    .read<LoginCubit>()
+                                    .passwordController,
+                                decoration: InputDecoration(
+                                  labelText: 'password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  prefixIcon: const Icon(Icons.lock),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isObscureText = !isObscureText;
+                                      });
+                                    },
+                                    child: Icon(
+                                      isObscureText
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    // Define error border
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    // Define focused error border
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password cannot be empty';
+                                  }
+                                  if (value.length < 4) {
+                                    return 'Password must be at least 4 characters long';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -142,10 +212,12 @@ class _LoginScreenState extends State<Loginscreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              context.read<LoginCubit>().emitloginloaded();
-
-                              // قم بتنفيذ منطق تسجيل الدخول هنا
-                              print('Sign In button pressed');
+                              // Validate the form before proceeding
+                              if (_formKey.currentState!.validate()) {
+                                context.read<LoginCubit>().emitloginloaded();
+                                // قم بتنفيذ منطق تسجيل الدخول هنا
+                                print('Sign In button pressed');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(
@@ -175,8 +247,13 @@ class _LoginScreenState extends State<Loginscreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              // قم بتنفيذ منطق "Contact us" هنا
-                              print('Contact us button pressed');
+                              // Call the static method from WhatsAppLauncher
+                              WhatsAppLauncher.launchWhatsApp(
+                                context: context,
+                                phoneNumber: supportPhoneNumber,
+                                message:
+                                    'Hello, I need assistance with the English Club app.', // Optional pre-filled message
+                              );
                             },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 15),

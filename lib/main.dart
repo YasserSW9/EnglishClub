@@ -23,13 +23,10 @@ class EnglishClub extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        return BlocProvider(
-          create: (context) => getIt<LoginCubit>(),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            initialRoute: Routes.onBoardingScreen,
-            onGenerateRoute: appRouter.generateRoute,
-          ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: Routes.onboarding,
+          onGenerateRoute: appRouter.generateRoute,
         );
       },
     );

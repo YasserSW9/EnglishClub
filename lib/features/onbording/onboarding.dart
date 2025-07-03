@@ -8,7 +8,7 @@ class Onboarding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 68, 1, 99),
+      backgroundColor: Color.fromARGB(255, 72, 2, 104),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -52,7 +52,7 @@ class Onboarding extends StatelessWidget {
                     print('Let\'s get started pressed!');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 181, 197, 224),
+                    backgroundColor: const Color.fromARGB(255, 232, 236, 243),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
