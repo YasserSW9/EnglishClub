@@ -1,5 +1,5 @@
+import 'package:english_club/core/helpers/spacing.dart';
 import 'package:flutter/material.dart';
-
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
 import 'package:english_club/features/login/ui/widgets/login_bloc_listener.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,31 +53,17 @@ class _LoginScreenState extends State<Loginscreen> {
                   style: TextStyle(color: Colors.white70, fontSize: 18),
                 ),
                 const SizedBox(height: 50),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.white,
-                  size: 50,
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.white,
-                  size: 50,
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.white,
-                  size: 50,
-                ),
+
+                verticalSpacing(110),
+                Image.asset("assets/images/down.gif"),
               ],
             ),
           ),
 
-          // واجهة تسجيل الدخول
           DraggableScrollableSheet(
-            initialChildSize: 0.1, // الحجم الأولي عند الفتح (10% من الشاشة)
-            minChildSize:
-                0.1, // الحد الأدنى لحجم السحب (لا يمكن إخفاؤه بالكامل)
-            maxChildSize: 0.8, // الحد الأقصى لحجم السحب (80% من الشاشة)
+            initialChildSize: 0.1, //)
+            minChildSize: 0.1, // ا
+            maxChildSize: 0.8, //
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: const BoxDecoration(
@@ -92,7 +78,6 @@ class _LoginScreenState extends State<Loginscreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10),
-                        // مقبض السحب
                         Container(
                           width: 40,
                           height: 5,

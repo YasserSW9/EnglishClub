@@ -13,6 +13,8 @@ class AdminMainScreen extends StatefulWidget {
 
 class _AdminMainScreenState extends State<AdminMainScreen> {
   int _currentBottomNavIndex = 0;
+  // Add a boolean flag to track if the SnackBar has been shown
+  bool _snackBarShown = false;
 
   final List<Widget> _bottomNavPages = const [
     NotificationsPageContent(),
@@ -31,33 +33,42 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Schedule the SnackBar to be shown after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_snackBarShown) {
+        _showWelcomeSnackBar();
+      }
+    });
+  }
+
+  void _showWelcomeSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Welcome Back! You are logged in.', // رسالة
+          style: TextStyle(color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.green, //
+        duration: const Duration(seconds: 2), //
+        behavior: SnackBarBehavior.floating, //
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), //
+        ),
+        margin: const EdgeInsets.all(50), //
+      ),
+    );
+    // Set the flag to true after showing the SnackBar
+    _snackBarShown = true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      body: Builder(
-        builder: (BuildContext innerContext) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(innerContext).showSnackBar(
-              SnackBar(
-                content: const Text(
-                  'Welcome Back! You are logged in.', // رسالة الترحيب
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                backgroundColor: Colors.green, // لون الخلفية أخضر
-                duration: const Duration(seconds: 2), // مدة ظهور الرسالة
-                behavior: SnackBarBehavior.floating, // لجعلها تظهر كـ floating
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), // حواف دائرية
-                ),
-                margin: const EdgeInsets.all(50), // هامش من الحواف
-              ),
-            );
-          });
-          // ارجع المحتوى الفعلي للصفحة
-          return _bottomNavPages[_currentBottomNavIndex];
-        },
-      ),
+      body: _bottomNavPages[_currentBottomNavIndex],
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentBottomNavIndex,
         onTap: (index) {
