@@ -1,6 +1,6 @@
 import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/routing/routes.dart';
-import 'package:english_club/features/home/home_screen.dart';
+import 'package:english_club/features/admin_main_screen/admin_main_screen.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart'
     show LoginCubit;
 import 'package:english_club/features/login/ui/login_Screen.dart';
@@ -26,8 +26,8 @@ class AppRouter {
             child: Loginscreen(),
           ),
         );
-      case Routes.homeScreen:
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case Routes.adminMainScreen:
+        return MaterialPageRoute(builder: (_) => AdminMainScreen());
 
       default:
         return null;

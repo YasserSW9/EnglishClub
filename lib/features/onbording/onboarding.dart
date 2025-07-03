@@ -48,7 +48,7 @@ class Onboarding extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.pushNamed(Routes.loginScreen);
+                    context.pushReplacementNamed(Routes.loginScreen);
                     print('Let\'s get started pressed!');
                   },
                   style: ElevatedButton.styleFrom(
