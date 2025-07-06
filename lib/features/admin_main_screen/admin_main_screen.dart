@@ -13,7 +13,6 @@ class AdminMainScreen extends StatefulWidget {
 
 class _AdminMainScreenState extends State<AdminMainScreen> {
   int _currentBottomNavIndex = 0;
-  // Add a boolean flag to track if the SnackBar has been shown
   bool _snackBarShown = false;
 
   final List<Widget> _bottomNavPages = const [
@@ -35,7 +34,6 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   @override
   void initState() {
     super.initState();
-    // Schedule the SnackBar to be shown after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_snackBarShown) {
         _showWelcomeSnackBar();
@@ -47,7 +45,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text(
-          'Welcome Back! You are logged in.', // رسالة
+          'Welcome Back! You are logged in.', //
           style: TextStyle(color: Colors.white),
           textAlign: TextAlign.center,
         ),
@@ -60,7 +58,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         margin: const EdgeInsets.all(50), //
       ),
     );
-    // Set the flag to true after showing the SnackBar
+
     _snackBarShown = true;
   }
 

@@ -1,6 +1,6 @@
 // lib/widgets/custom_app_bar.dart
 import 'package:english_club/core/helpers/extensions.dart';
-import 'package:english_club/core/routing/routes.dart'; // تأكد من أن هذا الاستيراد صحيح
+import 'package:english_club/core/routing/routes.dart'; //
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -41,39 +41,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         PopupMenuButton<String>(
           icon: const Icon(Icons.menu, color: Colors.white),
           onSelected: (String result) {
-            print('**********Selected: $result'); // للمراجعة في Debug Console
-
-            // استخدام جملة switch لربط القيمة المختارة بمسار التطبيق الصحيح
+            //
             switch (result) {
               case 'students_prizes':
-                context.pushNamed(
-                  Routes.studentPrizes,
-                ); // استخدام الثابت الصحيح من Routes
+                context.pushNamed(Routes.studentPrizes);
                 break;
               case 'todo_tasks':
-                context.pushNamed(
-                  Routes.todoTaks,
-                ); // استخدام الثابت الصحيح من Routes
+                context.pushNamed(Routes.todoTaks);
                 break;
               case 'english_club':
-                context.pushNamed(
-                  Routes.englishclub,
-                ); // استخدام الثابت الصحيح من Routes
+                context.pushNamed(Routes.englishclub);
                 break;
               case 'add_students':
-                context.pushNamed(
-                  Routes.addStudents,
-                ); // استخدام الثابت الصحيح من Routes
+                context.pushNamed(Routes.addStudents);
                 break;
               case 'logout':
-                // عند تسجيل الخروج، يمكنك الانتقال إلى شاشة تسجيل الدخول
-                // أو مسح جميع المسارات والدفع بمسار تسجيل الدخول
                 context.pushNamed(Routes.loginScreen);
-                // يمكنك أيضًا استخدام Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(...), (route) => false);
-                // لمسح جميع المسارات السابقة
                 break;
               default:
-                // لا تفعل شيئًا إذا كانت القيمة غير متوقعة
                 break;
             }
           },

@@ -12,7 +12,7 @@ class NotificationTabBar extends StatelessWidget {
       color: const Color(0xFF673AB7),
       child: TabBar(
         controller: tabController,
-        indicator: const BoxDecoration(), // لإزالة المؤشر الافتراضي
+        indicator: const BoxDecoration(), //
         labelPadding: EdgeInsets.zero,
         tabs: [
           Tab(
