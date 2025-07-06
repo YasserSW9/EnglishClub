@@ -19,18 +19,16 @@ class NotificationsPageContent extends StatefulWidget {
 class _NotificationsPageContentState extends State<NotificationsPageContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<NotificationItem> allNotifications = []; // قائمة واحدة لجميع الإشعارات
+  List<NotificationItem> allNotifications = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // لتحديث الـ UI عند تغيير التبويب
+      setState(() {});
     });
 
-    // استدعاء جلب الإشعارات عند تهيئة الشاشة
-    // تأكد أن NotificationsCubit متاح في الـ context
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationsCubit>().getNotifications();
     });
@@ -42,17 +40,13 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
     super.dispose();
   }
 
-  // هذه الدالة ستقوم بتقسيم الإشعارات بناءً على 'public' و 'studentId'
-  // بما أن الـ API يرجع قائمة واحدة في 'data', سنحتاج لفلترتها
   List<NotificationItem> _getGeneralNotifications() {
-    // الإشعارات العامة: غالباً ما تكون 'public' true وليس لها studentId
     return allNotifications
         .where((n) => n.public == 1 && n.studentId == null)
         .toList();
   }
 
   List<NotificationItem> _getStudentNotifications() {
-    // إشعارات الطلاب: غالباً ما يكون لها studentId
     return allNotifications.where((n) => n.studentId != null).toList();
   }
 
@@ -74,11 +68,8 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     success: (response) {
-                      // تحديث القائمة بالبيانات الفعلية من الـ API
-                      // الوصول إلى قائمة الإشعارات الفعلية من response.data!.data
                       allNotifications = response.data?.data ?? [];
 
-                      // تصفية الإشعارات بناءً على التبويبات
                       final List<NotificationItem> generalNotifications =
                           _getGeneralNotifications();
                       final List<NotificationItem> studentNotifications =
@@ -87,7 +78,6 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                       return TabBarView(
                         controller: _tabController,
                         children: [
-                          // General Notifications Tab
                           generalNotifications.isEmpty
                               ? const Center(
                                   child: Text('No general notifications.'),
@@ -101,7 +91,6 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                                     );
                                   },
                                 ),
-                          // Student Notifications Tab
                           studentNotifications.isEmpty
                               ? const Center(
                                   child: Text('No student notifications.'),

@@ -1,10 +1,9 @@
 // lib/widgets/notification_list_card.dart
 import 'package:english_club/features/admin_main_screen/data/models/notifications_response.dart';
 import 'package:flutter/material.dart';
-// تأكد من المسار الصحيح لملف notifications_response.dart الخاص بك
 
 class NotificationListCard extends StatelessWidget {
-  final NotificationItem notification; // الآن نستقبل كائن NotificationItem
+  final NotificationItem notification;
 
   const NotificationListCard({super.key, required this.notification});
 
@@ -32,7 +31,7 @@ class NotificationListCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    notification.title ?? 'No Title', // عرض العنوان
+                    notification.title ?? 'No Title',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -41,16 +40,14 @@ class NotificationListCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    notification.message ?? 'No Message', // عرض الرسالة
+                    notification.message ?? 'No Message',
                     style: const TextStyle(fontSize: 14, color: Colors.black87),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    // عرض التاريخ: نستخدم createdAt وننسقه
                     'Date: ${notification.createdAt != null ? DateTime.parse(notification.createdAt!).toLocal().toString().split(' ')[0] : 'N/A'}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
-                  // يمكنك إضافة المزيد من التفاصيل هنا إذا لزم الأمر
                 ],
               ),
             ),
