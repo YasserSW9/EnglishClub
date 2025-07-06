@@ -1,0 +1,108 @@
+--------------api service-----------------
+  @GET(ApiConstants.getProducts) 
+Future<List<ProductResponse>> getProducts();
+
+@GET("${ApiConstants.getProductById}/{id}") 
+Future<ProductResponse> getProductById(@Path("id") String productId);
+
+@POST(ApiConstants.addProduct) 
+Future<ProductResponse> addProduct(@Body() AddProductRequestBody product);
+
+@POST(ApiConstants.registerUser)
+Future<UserResponse> registerUser(@Body() RegisterRequestBody user);
+
+@PUT("${ApiConstants.updateProduct}/{id}") // تحديث منتج بالكامل
+Future<ProductResponse> updateProduct(
+    @Path("id") String productId,
+    @Body() ProductRequestBody updatedProduct);
+
+    @PATCH("${ApiConstants.updateUserStatus}/{id}") // تحديث حالة المستخدم فقط
+Future<UserResponse> updateUserStatus(
+    @Path("id") String userId,
+    @Body() UserStatusPatchBody statusUpdate);
+
+    @DELETE("${ApiConstants.deleteProduct}/{id}") // حذف منتج محدد
+Future<void> deleteProduct(@Path("id") String productId);
+
+
+--------------models file-----------------
+import 'package:json_annotation/json_annotation.dart';
+
+part 'feature_request_body_ .g.dart'; 
+
+@JsonSerializable()
+class FeatureRequestBody {
+  
+
+   FeatureRequestBody({required this.itemId, required this.quantity});
+
+  FeatureRequestBody ();  
+
+  Map<String, dynamic> toJson() => _$FeatureRequestBody ToJson(this);
+}
+
+
+flutter pub run build_runner build --delete-conflicting-outputs
+
+--------------repo file-----------------
+class FeatureRepo  {
+  final ApiService _apiService;
+
+  FeatureRepo (this._apiService);
+
+  Future<ApiResult<FeatureResponse >> getFeatureData(
+      FeatureRequestBody  featureRequestBody) async {
+    try {
+      final response = await _apiService.featureAction(featureRequestBody);  
+      return ApiResult.success(response);
+    } catch (error) {
+      return ApiResult.failure(ErrorHandler.handle(error));
+    }
+  }
+}
+  -------------- feature_state-----------------
+  import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'feature_state_ .freezed.dart'; 
+
+@freezed
+class FeatureState <T> with _$FeatureState <T> {
+  const factory FeatureState .initial() = _Initial;
+
+  const factory FeatureState.loading() = Loading;
+  const factory FeatureState.success(T data) = Success<T>;
+  const factory FeatureState.error({required String error}) = Error;
+}
+
+--------------feature cubit-----------------
+import 'package:bloc/bloc.dart';
+
+import 'package:flutter/material.dart';
+
+class  featureCubit extends Cubit< featureState> {
+  final  featureRepo  featureRepo;
+  
+   featureCubit(this. featureRepo) : super( featureState.initial());
+  void emit featureloaded() async {
+    emit( featureState.loading());
+     featureRequestBody  featureRequestBody =  featureRequestBody(
+      username: emailController.text,
+      password: passwordController.text,
+    );
+    final response = await  featureRepo. feature( featureRequestBody);
+    response.when(
+      success: ( featureResponse) async {
+        emit( featureState.success( featureResponse));
+      },
+      failure: (error) {
+        emit( featureState.error(error: error.apiErrorModel.message ?? ''));
+      },
+    );
+  }
+}
+
+
+
+
+
+
