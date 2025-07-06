@@ -31,7 +31,7 @@ class DioFactory {
     dio?.options.headers = {
       'Accept': 'application/json',
       'Authorization':
-          'Bearer ${"710|zztcTV0jDgVfWATtXniwkhtMCHUJYUiUMTeBLvlz3c475ad7"}',
+          'Bearer ${"732|tibL0nCne41xJEN7lIGDAWDOJHkWqOlUvySmUwEFd1a1df3e"}',
     };
   }
 
@@ -41,6 +41,8 @@ class DioFactory {
         requestBody: true,
         requestHeader: true,
         responseHeader: true,
+        responseBody: true,
+        error: true,
       ),
     );
   }

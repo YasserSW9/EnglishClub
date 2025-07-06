@@ -4,6 +4,7 @@ import 'package:english_club/features/admin_main_screen/logic/cubit/notification
 import 'package:english_club/features/admin_main_screen/logic/cubit/notifications_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 import 'notification_tab_bar.dart';
 import 'notification_list_card.dart';
@@ -86,8 +87,97 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                                   padding: const EdgeInsets.all(10),
                                   itemCount: generalNotifications.length,
                                   itemBuilder: (context, index) {
-                                    return NotificationListCard(
-                                      notification: generalNotifications[index],
+                                    return InkWell(
+                                      onTap: () {
+                                        final notification =
+                                            generalNotifications[index];
+                                        AwesomeDialog(
+                                          context: context,
+                                          dialogType: DialogType.info,
+                                          animType: AnimType.bottomSlide,
+                                          borderSide: const BorderSide(
+                                            color: Colors.blue,
+                                            width: 2,
+                                          ),
+                                          buttonsBorderRadius:
+                                              const BorderRadius.all(
+                                                Radius.circular(12),
+                                              ),
+                                          headerAnimationLoop: false,
+                                          title:
+                                              notification.title ?? 'No Title',
+                                          body: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 10,
+                                            ),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: const [
+                                                    Icon(
+                                                      Icons.notifications,
+                                                      color: Colors.blue,
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      'Notification Details',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 16),
+                                                const Text(
+                                                  "Message:",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  notification.message ??
+                                                      "No message",
+                                                ),
+                                                const SizedBox(height: 12),
+                                                const Text(
+                                                  "Date:",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  notification.createdAt != null
+                                                      ? DateTime.parse(
+                                                              notification
+                                                                  .createdAt!,
+                                                            )
+                                                            .toLocal()
+                                                            .toString()
+                                                            .split(' ')[0]
+                                                      : 'N/A',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          btnOkOnPress: () {},
+                                          btnOkText: 'Close',
+                                          btnOkIcon: Icons.check_circle,
+                                          btnOkColor: Color(0xFF673AB7),
+                                        ).show();
+                                      },
+                                      child: NotificationListCard(
+                                        notification:
+                                            studentNotifications[index],
+                                      ),
                                     );
                                   },
                                 ),
@@ -99,8 +189,97 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                                   padding: const EdgeInsets.all(10),
                                   itemCount: studentNotifications.length,
                                   itemBuilder: (context, index) {
-                                    return NotificationListCard(
-                                      notification: studentNotifications[index],
+                                    return InkWell(
+                                      onTap: () {
+                                        final notification =
+                                            studentNotifications[index];
+                                        AwesomeDialog(
+                                          context: context,
+                                          dialogType: DialogType.info,
+                                          animType: AnimType.bottomSlide,
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFF673AB7),
+                                            width: 2,
+                                          ),
+                                          buttonsBorderRadius:
+                                              const BorderRadius.all(
+                                                Radius.circular(12),
+                                              ),
+                                          headerAnimationLoop: false,
+                                          title:
+                                              notification.title ?? 'No Title',
+                                          body: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 10,
+                                            ),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: const [
+                                                    Icon(
+                                                      Icons.notifications,
+                                                      color: Colors.purple,
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      'Notification Details',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 16),
+                                                const Text(
+                                                  "Message:",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  notification.message ??
+                                                      "No message",
+                                                ),
+                                                const SizedBox(height: 12),
+                                                const Text(
+                                                  "Date:",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  notification.createdAt != null
+                                                      ? DateTime.parse(
+                                                              notification
+                                                                  .createdAt!,
+                                                            )
+                                                            .toLocal()
+                                                            .toString()
+                                                            .split(' ')[0]
+                                                      : 'N/A',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          btnOkOnPress: () {},
+                                          btnOkText: 'Close',
+                                          btnOkIcon: Icons.check_circle,
+                                          btnOkColor: Color(0xFF673AB7),
+                                        ).show();
+                                      },
+                                      child: NotificationListCard(
+                                        notification:
+                                            studentNotifications[index],
+                                      ),
                                     );
                                   },
                                 ),

@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupGetIt();
+
   runApp(EnglishClub(appRouter: AppRouter()));
 }
 
@@ -24,6 +25,7 @@ class EnglishClub extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           initialRoute: Routes.onboarding,
+
           onGenerateRoute: appRouter.generateRoute,
         );
       },
