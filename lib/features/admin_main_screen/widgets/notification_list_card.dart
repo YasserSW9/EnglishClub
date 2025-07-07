@@ -38,11 +38,7 @@ class NotificationListCard extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    notification.message ?? 'No Message',
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
+
                   const SizedBox(height: 4),
                   Text(
                     'Date: ${notification.createdAt != null ? DateTime.parse(notification.createdAt!).toLocal().toString().split(' ')[0] : 'N/A'}',

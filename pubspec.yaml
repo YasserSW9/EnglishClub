@@ -49,6 +49,7 @@ dependencies:
   retrofit: ^4.5.0
   retrofit_generator: 9.2.0
   shared_preferences: ^2.5.3
+  shimmer: ^3.0.0
   url_launcher: ^6.3.1
 
 dev_dependencies:

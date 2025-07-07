@@ -41,12 +41,6 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
     super.dispose();
   }
 
-  List<NotificationItem> _getGeneralNotifications() {
-    return allNotifications
-        .where((n) => n.public == 1 && n.studentId == null)
-        .toList();
-  }
-
   List<NotificationItem> _getStudentNotifications() {
     return allNotifications.where((n) => n.studentId != null).toList();
   }
@@ -70,6 +64,9 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                         const Center(child: CircularProgressIndicator()),
                     success: (response) {
                       allNotifications = response.data?.data ?? [];
+                      List<NotificationItem> _getGeneralNotifications() {
+                        return allNotifications = response.data?.data ?? [];
+                      }
 
                       final List<NotificationItem> generalNotifications =
                           _getGeneralNotifications();
