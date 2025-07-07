@@ -8,9 +8,13 @@ class NotificationsRepo {
 
   NotificationsRepo(this._apiService);
 
-  Future<ApiResult<NotificationsResponse>> getNotifications() async {
+  // تم تعديل هذه الدالة لتأخذ معلمة 'page' كمعلمة مسماة اختيارية
+  Future<ApiResult<NotificationsResponse>> getNotifications({
+    int page = 1,
+  }) async {
     try {
-      final response = await _apiService.getNotifications();
+      // هنا نقوم بتمرير معلمة 'page' إلى دالة getNotifications في ApiService
+      final response = await _apiService.getNotifications(page);
       return ApiResult.success(response);
     } catch (error) {
       return ApiResult.failure(ErrorHandler.handle(error));

@@ -1,6 +1,6 @@
 import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/routing/routes.dart';
-import 'package:english_club/features/admin_main_screen/admin_main_screen.dart';
+import 'package:english_club/features/admin_main_screen/ui/admin_main_screen.dart';
 import 'package:english_club/features/admin_main_screen/logic/cubit/notifications_cubit.dart';
 import 'package:english_club/features/english_club/ui/english_club.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart'

@@ -11,10 +11,13 @@ part 'api_service.g.dart';
 @RestApi(baseUrl: ApiConstants.apiBaseUrl)
 abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+
   // AUTH
   @POST(ApiConstants.login)
   Future<LoginResponse> login(@Body() LoginRequestBody loginRequestBody);
+
   // admin notifications
+  // تم تعديل هذه الدالة لتأخذ معلمة 'page' باستخدام @Query annotation
   @GET(ApiConstants.adminNotifications)
-  Future<NotificationsResponse> getNotifications();
+  Future<NotificationsResponse> getNotifications(@Query('page') int page);
 }
