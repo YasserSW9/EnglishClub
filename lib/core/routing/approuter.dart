@@ -8,6 +8,7 @@ import 'package:english_club/features/login/logic/cubit/login_cubit.dart'
 import 'package:english_club/features/login/ui/login_Screen.dart';
 
 import 'package:english_club/features/onbording/onboarding.dart';
+import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:english_club/features/student_prizes/ui/student_prizes.dart';
 import 'package:english_club/features/add_students/ui/add_students.dart';
 import 'package:english_club/features/todo_tasks/ui/todo_tasks.dart';
@@ -38,7 +39,12 @@ class AppRouter {
           ),
         );
       case Routes.studentPrizes:
-        return MaterialPageRoute(builder: (_) => StudentPrizes());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<PrizesCubit>(),
+            child: StudentPrizes(),
+          ),
+        );
       case Routes.todoTaks:
         return MaterialPageRoute(builder: (_) => TodoTasks());
       case Routes.addStudents:

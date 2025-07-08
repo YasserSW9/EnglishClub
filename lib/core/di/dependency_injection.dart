@@ -4,6 +4,8 @@ import 'package:english_club/features/admin_main_screen/data/repos/notifications
 import 'package:english_club/features/admin_main_screen/logic/cubit/notifications_cubit.dart';
 import 'package:english_club/features/login/data/repos/login_repo.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
+import 'package:english_club/features/student_prizes/data/repos/prizes_repo.dart';
+import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
@@ -23,4 +25,7 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton<NotificationsCubit>(
     () => NotificationsCubit(getIt()),
   );
+  // admin view prizes
+  getIt.registerLazySingleton<PrizesRepo>(() => PrizesRepo(getIt()));
+  getIt.registerLazySingleton<PrizesCubit>(() => PrizesCubit(getIt()));
 }

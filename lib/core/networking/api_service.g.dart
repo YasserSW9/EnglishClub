@@ -57,7 +57,7 @@ class _ApiService implements ApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'admin/notifications?page=1&public=1',
+            'admin/notifications?page=1&read=1',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -67,6 +67,33 @@ class _ApiService implements ApiService {
     late NotificationsResponse _value;
     try {
       _value = NotificationsResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PrizesResponse> getPrizes() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PrizesResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'admin/viewPrizes?page=1',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PrizesResponse _value;
+    try {
+      _value = PrizesResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

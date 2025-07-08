@@ -4,6 +4,7 @@ class ApiConstants {
   static String imageUrl = 'http://194.233.71.42/~bdhpointdev/english/';
   static const String login = "auth/login";
   static const String adminNotifications = "admin/notifications?page=1&read=1";
+  static const String adminViewPrizes = "admin/viewPrizes?page=1";
 
   static List<String> wisdoms = [
     'Learning is a journey, not a destination. Embrace the process and be patient with yourself along the way.',
