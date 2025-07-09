@@ -4,6 +4,7 @@ import 'package:english_club/features/admin_main_screen/logic/cubit/notification
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'notification_tab_bar.dart';
 import 'notification_list_card.dart';
@@ -70,7 +71,6 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // TabBar remains in the UI as it's a visual component
         NotificationTabBar(tabController: _tabController),
         Expanded(
           child:
@@ -78,11 +78,7 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                 NotificationsCubit,
                 NotificationsState<NotificationsResponse>
               >(
-                listener: (context, state) {
-                  // This listener is where you'd typically handle side effects
-                  // like showing Snackbars or navigation based on state changes.
-                  // Since the original listener was empty, it remains empty here.
-                },
+                listener: (context, state) {},
                 builder: (context, state) {
                   return state.when(
                     // Handle initial and loading states with shimmer
@@ -136,16 +132,16 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
                               color: Colors.red,
                               size: 50,
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             Text(
                               'Error loading notifications: $errorMsg',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.red,
-                                fontSize: 16,
+                                fontSize: 16.sp,
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
                             ElevatedButton(
                               onPressed: () {
                                 context
@@ -224,7 +220,7 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
       headerAnimationLoop: false,
       title: notification.title ?? 'No Title',
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,22 +229,27 @@ class _NotificationsPageContentState extends State<NotificationsPageContent>
               children: [
                 Icon(
                   Icons.notifications,
-                  color: isGeneral ? Colors.blue : Colors.purple,
+                  color: isGeneral
+                      ? const Color.fromARGB(255, 139, 186, 224)
+                      : Colors.purple,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8.w),
+                Text(
                   'Notification Details',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             const Text(
               "Message:",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(notification.message ?? "No message"),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             const Text("Date:", style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
               notification.createdAt != null

@@ -2,6 +2,7 @@
 import 'package:english_club/core/helpers/extensions.dart';
 import 'package:english_club/core/routing/routes.dart'; //
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -11,13 +12,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: const Color(0xFF673AB7),
       elevation: 0,
-      title: const Row(
+      title: Row(
         children: [
           CircleAvatar(
             backgroundColor: Colors.white24,
             child: Icon(Icons.person, color: Colors.white),
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 10.w),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -25,13 +26,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 'Admin',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 'admin',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: TextStyle(color: Colors.white70, fontSize: 14.sp),
               ),
             ],
           ),

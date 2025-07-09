@@ -1,5 +1,6 @@
 // lib/widgets/notification_tab_bar.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NotificationTabBar extends StatelessWidget {
   final TabController tabController;
@@ -17,7 +18,7 @@ class NotificationTabBar extends StatelessWidget {
         tabs: [
           Tab(
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
                 color: tabController.index == 0
                     ? const Color(0xFF8152D7)
@@ -42,7 +43,7 @@ class NotificationTabBar extends StatelessWidget {
           ),
           Tab(
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
                 color: tabController.index == 1
                     ? const Color(0xFF8152D7)

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
 import 'package:english_club/features/login/ui/widgets/login_bloc_listener.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:english_club/features/login/ui/widgets/whatsapp_launcher.dart'; // Import the new file
+import 'package:english_club/features/login/ui/widgets/whatsapp_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // Import the new file
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -39,20 +40,20 @@ class _LoginScreenState extends State<Loginscreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20.h),
+                Text(
                   'Swipe up',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 30,
+                    fontSize: 30.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+                Text(
                   'To signin to the english world',
-                  style: TextStyle(color: Colors.white70, fontSize: 18),
+                  style: TextStyle(color: Colors.white70, fontSize: 18.sp),
                 ),
-                const SizedBox(height: 50),
+                SizedBox(height: 50.h),
 
                 verticalSpacing(110),
                 Image.asset("assets/images/down.gif"),
@@ -77,16 +78,16 @@ class _LoginScreenState extends State<Loginscreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         Container(
-                          width: 40,
-                          height: 5,
+                          width: 40.w,
+                          height: 5.h,
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         const Text(
                           'Sign In',
                           style: TextStyle(
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<Loginscreen> {
                             color: Colors.deepPurple,
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30.h),
                         Form(
                           key: _formKey, // Assign the form key here
                           child: Column(
@@ -113,17 +114,17 @@ class _LoginScreenState extends State<Loginscreen> {
                                   errorBorder: OutlineInputBorder(
                                     // Define error border
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                       color: Colors.red,
-                                      width: 2,
+                                      width: 2.w,
                                     ),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     // Define focused error border
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                       color: Colors.red,
-                                      width: 2,
+                                      width: 2.w,
                                     ),
                                   ),
                                 ),
@@ -137,7 +138,7 @@ class _LoginScreenState extends State<Loginscreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20.h),
                               TextFormField(
                                 obscureText:
                                     isObscureText, // Use the state variable here
@@ -165,17 +166,17 @@ class _LoginScreenState extends State<Loginscreen> {
                                   errorBorder: OutlineInputBorder(
                                     // Define error border
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                       color: Colors.red,
-                                      width: 2,
+                                      width: 2.w,
                                     ),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     // Define focused error border
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                       color: Colors.red,
-                                      width: 2,
+                                      width: 2.w,
                                     ),
                                   ),
                                 ),
@@ -192,7 +193,7 @@ class _LoginScreenState extends State<Loginscreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30.h),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -251,16 +252,16 @@ class _LoginScreenState extends State<Loginscreen> {
                               Icons.mail_outline,
                               color: Color(0xFF5D2E8E),
                             ),
-                            label: const Text(
+                            label: Text(
                               'Contact us',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.sp,
                                 color: Color(0xFF5D2E8E),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                       ],
                     ),
                   ),

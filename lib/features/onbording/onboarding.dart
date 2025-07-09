@@ -1,6 +1,8 @@
 import 'package:english_club/core/helpers/extensions.dart';
 import 'package:english_club/core/routing/routes.dart';
+import 'package:english_club/core/themeing/color_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Onboarding extends StatelessWidget {
   const Onboarding({Key? key}) : super(key: key);
@@ -8,7 +10,7 @@ class Onboarding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 72, 2, 104),
+      backgroundColor: const Color.fromARGB(255, 59, 32, 105),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -22,30 +24,30 @@ class Onboarding extends StatelessWidget {
                   'assets/images/Animation - 1751310555673.gif',
                 ),
               ),
-              const SizedBox(height: 40),
-              const Text(
+              SizedBox(height: 40.h),
+              Text(
                 'Own it, Read it, Prove it',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 32,
+                  fontSize: 32.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20.h),
+              Text(
                 'Your Reading Journey reimagined! Learn efficiently with tailored lessons, interactive quizzes, and progress tracking. Start your journey today and build a better future with strong English skills! "Read, Learn, Advance - then repeat success!"',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 60),
+              SizedBox(height: 60.h),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 50.h,
                 child: ElevatedButton(
                   onPressed: () {
                     context.pushReplacementNamed(Routes.loginScreen);
@@ -56,15 +58,15 @@ class Onboarding extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
+                    textStyle: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   child: const Text('Let\'s get started'),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
             ],
           ),
         ),

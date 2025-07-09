@@ -84,7 +84,7 @@ class _ApiService implements ApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'admin/viewPrizes?page=1',
+            'admin/viewPrizes?page=1&collected=0',
             queryParameters: queryParameters,
             data: _data,
           )

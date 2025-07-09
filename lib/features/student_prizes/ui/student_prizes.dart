@@ -1,5 +1,12 @@
+// lib/features/prizes/ui/student_prizes.dart
+import 'package:english_club/features/student_prizes/ui/widgets/shimmer_loading_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
+import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
+import 'package:english_club/features/student_prizes/logic/cubit/prizes_state.dart';
+import 'package:english_club/features/student_prizes/ui/widgets/prize_list_view.dart'; // Import the new widget
 
 class StudentPrizes extends StatefulWidget {
   const StudentPrizes({super.key});
@@ -12,158 +19,104 @@ class _StudentPrizesState extends State<StudentPrizes>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> _students = [
-    {"name": "Mahmoud Dabbora", "collected": false},
-    {"name": "Ahmed Said", "collected": false},
-    {"name": "Ali Hassan", "collected": false},
-    {"name": "Fatima Zahra", "collected": true},
-    {"name": "Layla Khaled", "collected": true},
-  ];
-
-  late List<bool> _isExpandedList;
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _isExpandedList = List<bool>.filled(_students.length, false);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchPrizes();
+    });
   }
 
-  Widget _buildPrizeDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Text("Completed a story test with an evaluation Very Good!"),
-        ),
-        Row(
-          children: [
-            Image.asset(
-              'assets/images/studentScore.png',
-              width: 24,
-              height: 24,
-            ),
-            const SizedBox(width: 8),
-            const Text("Score: 3"),
-          ],
-        ),
-        const SizedBox(height: 20), // مسافة كبيرة بين النص والرقم كما طلبت
-        Row(
-          children: [
-            Image.asset('assets/images/golden.png', width: 24, height: 24),
-            const SizedBox(width: 8),
-            const Text("Golden cards: 0"),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Image.asset('assets/images/silver.png', width: 24, height: 24),
-            const SizedBox(width: 8),
-            const Text("Silver cards: 0"),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Image.asset('assets/images/bronze.png', width: 24, height: 24),
-            const SizedBox(width: 8),
-            const Text("Bronze cards: 1"),
-          ],
-        ),
-      ],
-    );
+  void _fetchPrizes() {
+    context.read<PrizesCubit>().emitGetPrizes();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final uncollected = _students.where((s) => !s["collected"]).toList();
-    final collected = _students.where((s) => s["collected"]).toList();
-
-    Widget buildList(List<Map<String, dynamic>> list) {
-      return ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (context, i) {
-          final student = list[i];
-          final index = _students.indexOf(student);
-
-          return ExpansionTile(
-            leading: const CircleAvatar(
-              backgroundColor: Colors.orange,
-              child: Icon(Icons.person, color: Colors.white),
-            ),
-            title: Text(student["name"]),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (!student["collected"])
-                  Checkbox(
-                    value: false,
-                    onChanged: (_) {
-                      AwesomeDialog(
-                        context: context,
-                        dialogType: DialogType.info,
-                        animType: AnimType.rightSlide,
-                        title: 'Collect Prize',
-                        desc: 'Mark "${student["name"]}" as collected?',
-                        btnCancelText: "No",
-                        btnOkText: "Yes",
-                        btnOkOnPress: () {
-                          setState(() {
-                            student["collected"] = true;
-                            // Reset expansion for moved item (optional)
-                            _isExpandedList[index] = false;
-                          });
-                          _tabController.animateTo(1);
-                        },
-                        btnCancelOnPress: () {},
-                      ).show();
-                    },
-                  ),
-                const Icon(Icons.expand_more),
-              ],
-            ),
-            backgroundColor: _isExpandedList[index]
-                ? const Color.fromARGB(255, 127, 243, 131)
-                : Colors.transparent,
-            onExpansionChanged: (expanded) {
-              setState(() {
-                _isExpandedList[index] = expanded;
-              });
-            },
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: _buildPrizeDetails(),
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Students Prizes"),
+        title: const Text(
+          "Students Prizes",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white, // لون نص التبويب النشط أبيض
-          unselectedLabelColor:
-              Colors.white70, // نص التبويب غير النشط أبيض شفاف
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
           tabs: const [
-            Tab(text: "UnCollected"),
+            Tab(text: "Uncollected"),
             Tab(text: "Collected"),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [buildList(uncollected), buildList(collected)],
+      body: BlocBuilder<PrizesCubit, PrizesState<PrizesResponse>>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) =>
+                  ShimmerLoadingWidgets.buildShimmerListItem(),
+            ),
+            loading: () => ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) =>
+                  ShimmerLoadingWidgets.buildShimmerListItem(),
+            ),
+            success: (prizesResponse) {
+              final List<PrizeItem> allPrizes = prizesResponse.data?.data ?? [];
+
+              debugPrint('Total Prizes: ${allPrizes.length}');
+
+              final uncollectedPrizes = allPrizes
+                  .where((item) => item.collected == 0)
+                  .toList();
+              final collectedPrizes = allPrizes
+                  .where((item) => item.collected == 1)
+                  .toList();
+
+              debugPrint(
+                'Uncollected Prizes Count: ${uncollectedPrizes.length}',
+              );
+              debugPrint('Collected Prizes Count: ${collectedPrizes.length}');
+
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  PrizeListView(
+                    prizes: uncollectedPrizes,
+                    tabController: _tabController,
+                    onPrizeCollected: _fetchPrizes, // Pass the callback
+                  ),
+                  PrizeListView(
+                    prizes: collectedPrizes,
+                    tabController: _tabController,
+                    onPrizeCollected: _fetchPrizes, // Pass the callback
+                  ),
+                ],
+              );
+            },
+            error: (errorMsg) => Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Text(
+                  'Error loading prizes: $errorMsg',
+                  style: TextStyle(color: Colors.red, fontSize: 18.sp),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

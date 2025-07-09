@@ -1,5 +1,6 @@
 // lib/admin_main_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/custom_app_bar.dart';
 import 'widgets/custom_bottom_navigation_bar.dart';
 import 'widgets/notifications_page_content.dart';
@@ -15,18 +16,18 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   int _currentBottomNavIndex = 0;
   bool _snackBarShown = false;
 
-  final List<Widget> _bottomNavPages = const [
+  final List<Widget> _bottomNavPages = [
     NotificationsPageContent(),
     Center(
       child: Text(
         'Search Page Content',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
       ),
     ),
     Center(
       child: Text(
         'Profile Page Content',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
       ),
     ),
   ];
