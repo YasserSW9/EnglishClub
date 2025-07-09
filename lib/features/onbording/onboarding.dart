@@ -1,6 +1,5 @@
 import 'package:english_club/core/helpers/extensions.dart';
 import 'package:english_club/core/routing/routes.dart';
-import 'package:english_club/core/themeing/color_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

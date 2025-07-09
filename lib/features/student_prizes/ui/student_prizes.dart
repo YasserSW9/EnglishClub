@@ -18,24 +18,30 @@ class StudentPrizes extends StatefulWidget {
 class _StudentPrizesState extends State<StudentPrizes>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  // Hold a reference to the Cubit
+  late PrizesCubit _prizesCubit; // New: Reference to the Cubit
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchPrizes();
-    });
-  }
+    _prizesCubit = context.read<PrizesCubit>(); // Initialize Cubit reference
 
-  void _fetchPrizes() {
-    context.read<PrizesCubit>().emitGetPrizes();
+    // Initialize the Cubit's scroll controller
+    _prizesCubit.initScrollController();
+
+    // Fetch prizes after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _prizesCubit.getPrizes(); // Call getPrizes on the Cubit
+    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _prizesCubit
+        .disposeScrollController(); // Dispose the Cubit's scroll controller
     super.dispose();
   }
 
@@ -59,24 +65,36 @@ class _StudentPrizesState extends State<StudentPrizes>
           ],
         ),
       ),
-      body: BlocBuilder<PrizesCubit, PrizesState<PrizesResponse>>(
+      body: BlocConsumer<PrizesCubit, PrizesState<PrizesResponse>>(
+        listener: (context, state) {
+          state.whenOrNull(
+            error: (errorMsg) {
+              // Optionally show a SnackBar or Toast for errors
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(errorMsg)));
+            },
+          );
+        },
         builder: (context, state) {
           return state.when(
             initial: () => ListView.builder(
-              itemCount: 5,
+              itemCount: 5, // Show 5 shimmer items
               itemBuilder: (context, index) =>
                   ShimmerLoadingWidgets.buildShimmerListItem(),
             ),
             loading: () => ListView.builder(
-              itemCount: 5,
+              itemCount: 5, // Show 5 shimmer items
               itemBuilder: (context, index) =>
                   ShimmerLoadingWidgets.buildShimmerListItem(),
             ),
             success: (prizesResponse) {
-              final List<PrizeItem> allPrizes = prizesResponse.data?.data ?? [];
+              // Access data from the Cubit instance directly
+              final allPrizes = _prizesCubit.allPrizes;
+              final isLoadingMore = _prizesCubit.isLoadingMore;
+              final hasMoreData = _prizesCubit.hasMoreData;
 
-              debugPrint('Total Prizes: ${allPrizes.length}');
-
+              // Filter prizes based on collected status
               final uncollectedPrizes = allPrizes
                   .where((item) => item.collected == 0)
                   .toList();
@@ -92,15 +110,28 @@ class _StudentPrizesState extends State<StudentPrizes>
               return TabBarView(
                 controller: _tabController,
                 children: [
+                  // Pass relevant Cubit properties to PrizeListView
                   PrizeListView(
                     prizes: uncollectedPrizes,
                     tabController: _tabController,
-                    onPrizeCollected: _fetchPrizes, // Pass the callback
+                    onPrizeCollected: () => _prizesCubit.getPrizes(
+                      isRefresh: true,
+                    ), // Trigger refresh
+                    // Pass the Cubit's scroll controller to the PrizeListView
+                    scrollController: _prizesCubit.scrollController,
+                    isLoadingMore: isLoadingMore,
+                    hasMoreData: hasMoreData,
                   ),
                   PrizeListView(
                     prizes: collectedPrizes,
                     tabController: _tabController,
-                    onPrizeCollected: _fetchPrizes, // Pass the callback
+                    onPrizeCollected: () => _prizesCubit.getPrizes(
+                      isRefresh: true,
+                    ), // Trigger refresh
+                    // Pass the Cubit's scroll controller to the PrizeListView
+                    scrollController: _prizesCubit.scrollController,
+                    isLoadingMore: isLoadingMore,
+                    hasMoreData: hasMoreData,
                   ),
                 ],
               );

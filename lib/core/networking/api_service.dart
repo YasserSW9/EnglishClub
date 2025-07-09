@@ -22,5 +22,8 @@ abstract class ApiService {
   Future<NotificationsResponse> getNotifications(@Query('page') int page);
   // admin view prizes
   @GET(ApiConstants.adminViewPrizes)
-  Future<PrizesResponse> getPrizes();
+  Future<PrizesResponse> getPrizes(
+    @Query('page') int page,
+    @Query('collected') int? collectedStatus,
+  );
 }

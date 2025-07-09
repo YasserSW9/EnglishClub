@@ -75,16 +75,20 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<PrizesResponse> getPrizes() async {
+  Future<PrizesResponse> getPrizes(int page, int? collectedStatus) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'collected': collectedStatus,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<PrizesResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'admin/viewPrizes?page=1&collected=0',
+            'admin/viewPrizes?page=1',
             queryParameters: queryParameters,
             data: _data,
           )

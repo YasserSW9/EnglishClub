@@ -8,9 +8,14 @@ class PrizesRepo {
 
   PrizesRepo(this._apiService);
 
-  Future<ApiResult<PrizesResponse>> getPrizes() async {
+  Future<ApiResult<PrizesResponse>> getPrizes({
+    int page = 1, // إضافة معلمة رقم الصفحة الافتراضية 1
+    int?
+    collectedStatus, // إضافة معلمة حالة التحصيل (0 لغير المجمعة، 1 للمجمعة، null للجميع)
+  }) async {
     try {
-      final response = await _apiService.getPrizes();
+      // تمرير المعلمات إلى خدمة API
+      final response = await _apiService.getPrizes(page, collectedStatus);
       return ApiResult.success(response);
     } catch (error) {
       return ApiResult.failure(ErrorHandler.handle(error));
