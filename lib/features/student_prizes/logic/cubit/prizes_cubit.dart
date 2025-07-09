@@ -10,181 +10,274 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
   PrizesCubit(this.prizesRepo) : super(const PrizesState.initial());
 
-  // رقم الصفحة الحالية التي سيتم جلب البيانات منها.
-  int _currentPage = 1;
+  // Current page number for uncollected prizes
+  int _uncollectedCurrentPage = 1;
+  final List<PrizeItem> _uncollectedPrizes = [];
+  bool _uncollectedHasMoreData = true;
+  bool _uncollectedIsLoadingMore = false;
+  final ScrollController uncollectedScrollController = ScrollController();
 
-  // قائمة لتخزين جميع الجوائز التي تم جلبها حتى الآن.
-  final List<PrizeItem> _allPrizes = [];
+  // Current page number for collected prizes
+  int _collectedCurrentPage = 1;
+  final List<PrizeItem> _collectedPrizes = [];
+  bool _collectedHasMoreData = true;
+  bool _collectedIsLoadingMore = false;
+  final ScrollController collectedScrollController = ScrollController();
 
-  // يشير إذا ما كان هناك المزيد من البيانات لجلبها من الخادم.
-  bool _hasMoreData = true;
+  List<PrizeItem> get uncollectedPrizes => _uncollectedPrizes;
+  bool get uncollectedHasMoreData => _uncollectedHasMoreData;
+  bool get uncollectedIsLoadingMore => _uncollectedIsLoadingMore;
 
-  // يشير إذا ما كانت عملية "تحميل المزيد" قيد التنفيذ حاليًا.
-  bool _isLoadingMore = false;
+  List<PrizeItem> get collectedPrizes => _collectedPrizes;
+  bool get collectedHasMoreData => _collectedHasMoreData;
+  bool get collectedIsLoadingMore => _collectedIsLoadingMore;
 
-  // وحدة تحكم بالتمرير (ScrollController) لمراقبة موقع التمرير
-  // وتحديد متى يتم جلب المزيد من البيانات.
-  final ScrollController scrollController = ScrollController();
-
-  // Getter للوصول إلى قائمة جميع الجوائز من خارج الـ Cubit.
-  List<PrizeItem> get allPrizes => _allPrizes;
-
-  // Getter لمعرفة ما إذا كان هناك المزيد من البيانات.
-  bool get hasMoreData => _hasMoreData;
-
-  // Getter لمعرفة ما إذا كانت عملية التحميل الإضافي قيد التنفيذ.
-  bool get isLoadingMore => _isLoadingMore;
-
-  /// تهيئة ScrollController وإضافة المستمع له.
-  /// يجب استدعاء هذه الدالة عند تهيئة الـ Bloc (عادة في initState).
-  void initScrollController() {
-    scrollController.addListener(_onScroll);
+  void initScrollControllers() {
+    uncollectedScrollController.addListener(_onUncollectedScroll);
+    collectedScrollController.addListener(_onCollectedScroll);
   }
 
-  /// التخلص من ScrollController عند إغلاق الشاشة لمنع تسرب الذاكرة.
-  /// يجب استدعاء هذه الدالة عند التخلص من الـ Bloc (عادة في dispose).
-  void disposeScrollController() {
-    scrollController.dispose();
+  void disposeScrollControllers() {
+    uncollectedScrollController.dispose();
+    collectedScrollController.dispose();
   }
 
-  /// دالة المستمع لـ ScrollController.
-  /// تتحقق ما إذا كان المستخدم قد وصل إلى نهاية القائمة،
-  /// وهل يوجد المزيد من البيانات، وهل لا توجد عملية تحميل قيد التنفيذ.
-  void _onScroll() {
-    if (scrollController.position.pixels ==
-            scrollController.position.maxScrollExtent &&
-        _hasMoreData &&
-        !_isLoadingMore) {
-      loadMorePrizes(); // استدعاء دالة تحميل المزيد من الجوائز.
+  void _onUncollectedScroll() {
+    if (uncollectedScrollController.position.pixels ==
+            uncollectedScrollController.position.maxScrollExtent &&
+        _uncollectedHasMoreData &&
+        !_uncollectedIsLoadingMore) {
+      loadMoreUncollectedPrizes();
     }
   }
 
-  /// دالة لجلب الجوائز، تستخدم للتحميل الأولي أو التحديث.
-  /// [isRefresh] إذا كانت true، فإنها تعيد تعيين الصفحات وتمسح البيانات الموجودة.
-  Future<void> getPrizes({bool isRefresh = false}) async {
-    // إذا كان الطلب تحديثًا، نعيد تهيئة حالة ترقيم الصفحات ونمسح البيانات.
+  void _onCollectedScroll() {
+    if (collectedScrollController.position.pixels ==
+            collectedScrollController.position.maxScrollExtent &&
+        _collectedHasMoreData &&
+        !_collectedIsLoadingMore) {
+      loadMoreCollectedPrizes();
+    }
+  }
+
+  // Fetch Uncollected Prizes
+  Future<void> getUncollectedPrizes({bool isRefresh = false}) async {
     if (isRefresh) {
-      _currentPage = 1;
-      _allPrizes.clear();
-      _hasMoreData = true;
-      _isLoadingMore = false; // تأكد من إعادة تعيين هذه العلامة أيضًا
+      _uncollectedCurrentPage = 1;
+      _uncollectedPrizes.clear();
+      _uncollectedHasMoreData = true;
+      _uncollectedIsLoadingMore = false;
     }
 
-    // إذا لم يكن هناك المزيد من البيانات للتحميل وليست عملية تحديث،
-    // نصدر حالة النجاح بالبيانات الموجودة ونخرج.
-    if (!_hasMoreData && !isRefresh) {
+    if (!_uncollectedHasMoreData && !isRefresh) {
       emit(
         PrizesState.success(
-          PrizesResponse(
-            data: PrizesData(data: _allPrizes),
-            // يمكن إضافة رسالة أو معلومات أخرى إذا لزم الأمر
-          ),
+          PrizesResponse(data: PrizesData(data: _uncollectedPrizes)),
         ),
       );
       return;
     }
 
-    // إذا كانت القائمة فارغة أو كان الطلب تحديثًا، نطلق حالة التحميل الكاملة.
-    if (_allPrizes.isEmpty || isRefresh) {
+    if (_uncollectedPrizes.isEmpty || isRefresh) {
       emit(const PrizesState.loading());
     }
 
-    // نطلب جلب الجوائز من الـ Repository للصفحة الحالية.
-    // لاحظ أننا لا نرسل `collectedStatus` هنا، حيث أن هذا الـ Cubit يتعامل مع قائمة واحدة.
-    final result = await prizesRepo.getPrizes(page: _currentPage);
+    final result = await prizesRepo.getPrizes(
+      page: _uncollectedCurrentPage,
+      collected: 0,
+    );
 
-    // نتعامل مع نتيجة طلب الـ API (نجاح أو فشل).
     result.when(
       success: (prizesResponse) {
-        // إذا كانت هناك بيانات في الاستجابة، نضيفها إلى قائمة جميع الجوائز.
         if (prizesResponse.data?.data != null) {
-          _allPrizes.addAll(prizesResponse.data!.data!);
-          // نتحقق إذا ما كان هناك صفحة تالية لتحديث علامة `_hasMoreData`.
+          _uncollectedPrizes.addAll(prizesResponse.data!.data!);
           if (prizesResponse.data!.nextPageUrl == null) {
-            _hasMoreData = false; // لا يوجد المزيد من البيانات.
+            _uncollectedHasMoreData = false;
           } else {
-            _currentPage++; // ننتقل إلى الصفحة التالية للتحميل المستقبلي.
+            _uncollectedCurrentPage++;
           }
         } else {
-          _hasMoreData = false; // لا توجد بيانات في الاستجابة، لا يوجد المزيد.
+          _uncollectedHasMoreData = false;
         }
-        // نصدر حالة النجاح مع جميع الجوائز المجمعة.
         emit(
           PrizesState.success(
             PrizesResponse(
-              data: PrizesData(data: _allPrizes),
-              message: prizesResponse.message, // حافظ على الرسالة من الـ API
+              data: PrizesData(data: _uncollectedPrizes),
+              message: prizesResponse.message,
             ),
           ),
         );
       },
       failure: (error) {
-        // في حالة الفشل، نصدر حالة الخطأ.
         emit(
           PrizesState.error(
-            error: error.apiErrorModel.message ?? 'Unknown error',
+            error:
+                error.apiErrorModel.message ??
+                'Unknown error fetching uncollected prizes',
           ),
         );
       },
     );
   }
 
-  /// دالة لجلب المزيد من الجوائز عند التمرير إلى نهاية القائمة.
-  Future<void> loadMorePrizes() async {
-    // نخرج إذا لم يكن هناك المزيد من البيانات أو إذا كانت عملية تحميل جارية.
-    if (!_hasMoreData || _isLoadingMore) return;
+  // Fetch Collected Prizes
+  Future<void> getCollectedPrizes({bool isRefresh = false}) async {
+    if (isRefresh) {
+      _collectedCurrentPage = 1;
+      _collectedPrizes.clear();
+      _collectedHasMoreData = true;
+      _collectedIsLoadingMore = false;
+    }
 
-    // نضع علامة `_isLoadingMore` إلى true لمنع طلبات متكررة.
-    _isLoadingMore = true;
-
-    // نصدر حالة النجاح الحالية (مع قائمة البيانات الموجودة)
-    // لإظهار مؤشر التحميل الإضافي في واجهة المستخدم.
-    emit(
-      PrizesState.success(
-        PrizesResponse(
-          data: PrizesData(data: _allPrizes),
-          // لا نغير الرسالة هنا، فقط نحدّث البيانات
+    if (!_collectedHasMoreData && !isRefresh) {
+      emit(
+        PrizesState.success(
+          PrizesResponse(data: PrizesData(data: _collectedPrizes)),
         ),
-      ),
+      );
+      return;
+    }
+
+    if (_collectedPrizes.isEmpty || isRefresh) {
+      emit(const PrizesState.loading());
+    }
+
+    final result = await prizesRepo.getPrizes(
+      page: _collectedCurrentPage,
+      collected: 1,
     );
 
-    // نطلب جلب الجوائز من الـ Repository للصفحة الحالية.
-    final result = await prizesRepo.getPrizes(page: _currentPage);
-
-    // نتعامل مع نتيجة طلب الـ API (نجاح أو فشل).
     result.when(
       success: (prizesResponse) {
-        // إذا كانت هناك بيانات في الاستجابة، نضيفها إلى قائمة جميع الجوائز.
         if (prizesResponse.data?.data != null) {
-          _allPrizes.addAll(prizesResponse.data!.data!);
-          // نتحقق إذا ما كان هناك صفحة تالية لتحديث علامة `_hasMoreData`.
+          _collectedPrizes.addAll(prizesResponse.data!.data!);
           if (prizesResponse.data!.nextPageUrl == null) {
-            _hasMoreData = false; // لا يوجد المزيد من البيانات.
+            _collectedHasMoreData = false;
           } else {
-            _currentPage++; // ننتقل إلى الصفحة التالية.
+            _collectedCurrentPage++;
           }
         } else {
-          _hasMoreData = false; // لا توجد بيانات، لا يوجد المزيد.
+          _collectedHasMoreData = false;
         }
-        // بعد انتهاء التحميل، نعيد `_isLoadingMore` إلى false.
-        _isLoadingMore = false;
-        // نصدر حالة النجاح النهائية مع جميع الجوائز المجمعة.
         emit(
           PrizesState.success(
             PrizesResponse(
-              data: PrizesData(data: _allPrizes),
-              message: prizesResponse.message, // حافظ على الرسالة من الـ API
+              data: PrizesData(data: _collectedPrizes),
+              message: prizesResponse.message,
             ),
           ),
         );
       },
       failure: (error) {
-        // في حالة الفشل، نعيد `_isLoadingMore` إلى false.
-        _isLoadingMore = false;
-        // نصدر حالة الخطأ.
         emit(
           PrizesState.error(
-            error: error.apiErrorModel.message ?? 'Failed to load more prizes',
+            error:
+                error.apiErrorModel.message ??
+                'Unknown error fetching collected prizes',
+          ),
+        );
+      },
+    );
+  }
+
+  // Load More Uncollected Prizes
+  Future<void> loadMoreUncollectedPrizes() async {
+    if (!_uncollectedHasMoreData || _uncollectedIsLoadingMore) return;
+
+    _uncollectedIsLoadingMore = true;
+
+    emit(
+      PrizesState.success(
+        PrizesResponse(data: PrizesData(data: _uncollectedPrizes)),
+      ),
+    );
+
+    final result = await prizesRepo.getPrizes(
+      page: _uncollectedCurrentPage,
+      collected: 0,
+    );
+
+    result.when(
+      success: (prizesResponse) {
+        if (prizesResponse.data?.data != null) {
+          _uncollectedPrizes.addAll(prizesResponse.data!.data!);
+          if (prizesResponse.data!.nextPageUrl == null) {
+            _uncollectedHasMoreData = false;
+          } else {
+            _uncollectedCurrentPage++;
+          }
+        } else {
+          _uncollectedHasMoreData = false;
+        }
+        _uncollectedIsLoadingMore = false;
+        emit(
+          PrizesState.success(
+            PrizesResponse(
+              data: PrizesData(data: _uncollectedPrizes),
+              message: prizesResponse.message,
+            ),
+          ),
+        );
+      },
+      failure: (error) {
+        _uncollectedIsLoadingMore = false;
+        emit(
+          PrizesState.error(
+            error:
+                error.apiErrorModel.message ??
+                'Failed to load more uncollected prizes',
+          ),
+        );
+      },
+    );
+  }
+
+  // Load More Collected Prizes
+  Future<void> loadMoreCollectedPrizes() async {
+    if (!_collectedHasMoreData || _collectedIsLoadingMore) return;
+
+    _collectedIsLoadingMore = true;
+
+    emit(
+      PrizesState.success(
+        PrizesResponse(data: PrizesData(data: _collectedPrizes)),
+      ),
+    );
+
+    final result = await prizesRepo.getPrizes(
+      page: _collectedCurrentPage,
+      collected: 1,
+    );
+
+    result.when(
+      success: (prizesResponse) {
+        if (prizesResponse.data?.data != null) {
+          _collectedPrizes.addAll(prizesResponse.data!.data!);
+          if (prizesResponse.data!.nextPageUrl == null) {
+            _collectedHasMoreData = false;
+          } else {
+            _collectedCurrentPage++;
+          }
+        } else {
+          _collectedHasMoreData = false;
+        }
+        _collectedIsLoadingMore = false;
+        emit(
+          PrizesState.success(
+            PrizesResponse(
+              data: PrizesData(data: _collectedPrizes),
+              message: prizesResponse.message,
+            ),
+          ),
+        );
+      },
+      failure: (error) {
+        _collectedIsLoadingMore = false;
+        emit(
+          PrizesState.error(
+            error:
+                error.apiErrorModel.message ??
+                'Failed to load more collected prizes',
           ),
         );
       },

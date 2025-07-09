@@ -34,7 +34,6 @@ class PrizeListView extends StatelessWidget {
       );
     }
 
-    // Calculate total items: prizes + potential loading/no-more-data indicator
     final int itemCount = prizes.length + (_hasFooter ? 1 : 0);
 
     return ListView.builder(
@@ -42,15 +41,13 @@ class PrizeListView extends StatelessWidget {
       itemCount: itemCount,
       padding: EdgeInsets.symmetric(vertical: 8.h),
       itemBuilder: (context, i) {
-        // Render the footer if it's the last item and a footer is needed
         if (_hasFooter && i == prizes.length) {
           if (isLoadingMore) {
-            // هنا التغيير: استخدام Shimmer بدلاً من CircularProgressIndicator
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 20.h),
               child: Column(
                 children: List.generate(
-                  1, // يمكنك زيادة هذا العدد لعرض المزيد من عناصر الشيمر للتحميل الإضافي
+                  1,
                   (index) => ShimmerLoadingWidgets.buildShimmerListItem(),
                 ),
               ),
@@ -61,7 +58,10 @@ class PrizeListView extends StatelessWidget {
               child: Center(
                 child: Text(
                   'No more prizes to load.',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: const Color.fromARGB(255, 41, 41, 41),
+                  ),
                 ),
               ),
             );
