@@ -80,6 +80,14 @@ class _StudentPrizesState extends State<StudentPrizes>
                 context,
               ).showSnackBar(SnackBar(content: Text(errorMsg)));
             },
+            // يمكنك إضافة استجابات لـ 'success' هنا إذا أردت عرض رسالة نجاح لعملية الجمع
+            // success: (prizesResponse) {
+            //   if (prizesResponse.message != null && prizesResponse.message!.isNotEmpty) {
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       SnackBar(content: Text(prizesResponse.message!)),
+            //     );
+            //   }
+            // },
           );
         },
         builder: (context, state) {
@@ -114,8 +122,7 @@ class _StudentPrizesState extends State<StudentPrizes>
                   PrizeListView(
                     prizes: uncollectedPrizes,
                     tabController: _tabController,
-                    onPrizeCollected: () =>
-                        _prizesCubit.getUncollectedPrizes(isRefresh: true),
+                    // تم إزالة onPrizeCollected: () => _prizesCubit.getUncollectedPrizes(isRefresh: true),
                     scrollController: _prizesCubit.uncollectedScrollController,
                     isLoadingMore: uncollectedIsLoadingMore,
                     hasMoreData: uncollectedHasMoreData,
@@ -124,8 +131,7 @@ class _StudentPrizesState extends State<StudentPrizes>
                   PrizeListView(
                     prizes: collectedPrizes,
                     tabController: _tabController,
-                    onPrizeCollected: () =>
-                        _prizesCubit.getCollectedPrizes(isRefresh: true),
+                    // تم إزالة onPrizeCollected: () => _prizesCubit.getCollectedPrizes(isRefresh: true),
                     scrollController: _prizesCubit.collectedScrollController,
                     isLoadingMore: collectedIsLoadingMore,
                     hasMoreData: collectedHasMoreData,

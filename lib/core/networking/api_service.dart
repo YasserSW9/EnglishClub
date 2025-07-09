@@ -26,4 +26,9 @@ abstract class ApiService {
     @Query('page') int page,
     @Query('collected') int? collectedStatus,
   );
+  @POST("/admin/students/{student_id}/collectedPrize/{prize_item_id}")
+  Future<HttpResponse<dynamic>> collectPrize(
+    @Path("student_id") int studentId,
+    @Path("prize_item_id") int prizeItemId,
+  );
 }

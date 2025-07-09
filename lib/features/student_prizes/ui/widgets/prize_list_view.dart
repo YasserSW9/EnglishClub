@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class PrizeListView extends StatelessWidget {
   final List<PrizeItem> prizes;
   final TabController tabController;
-  final Function() onPrizeCollected;
+  // تم إزالة final Function() onPrizeCollected;
   final ScrollController scrollController;
   final bool isLoadingMore;
   final bool hasMoreData;
@@ -17,7 +17,7 @@ class PrizeListView extends StatelessWidget {
     super.key,
     required this.prizes,
     required this.tabController,
-    required this.onPrizeCollected,
+    // تم إزالة required this.onPrizeCollected,
     required this.scrollController,
     required this.isLoadingMore,
     required this.hasMoreData,
@@ -74,7 +74,7 @@ class PrizeListView extends StatelessWidget {
           prizeItem: prizeItem,
           index: i,
           tabController: tabController,
-          onPrizeCollected: onPrizeCollected,
+          // تم إزالة onPrizeCollected: onPrizeCollected,
         );
       },
     );

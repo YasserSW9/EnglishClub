@@ -69,7 +69,9 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
       _uncollectedIsLoadingMore = false;
     }
 
-    if (!_uncollectedHasMoreData && !isRefresh) {
+    if (!_uncollectedHasMoreData &&
+        !isRefresh &&
+        _uncollectedPrizes.isNotEmpty) {
       emit(
         PrizesState.success(
           PrizesResponse(data: PrizesData(data: _uncollectedPrizes)),
@@ -84,13 +86,17 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
     final result = await prizesRepo.getPrizes(
       page: _uncollectedCurrentPage,
-      collected: 0,
+      collected: 0, // Request uncollected prizes
     );
 
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          _uncollectedPrizes.addAll(prizesResponse.data!.data!);
+          // Explicitly filter to ensure only uncollected prizes are added
+          final filteredPrizes = prizesResponse.data!.data!
+              .where((item) => item.collected == 0)
+              .toList();
+          _uncollectedPrizes.addAll(filteredPrizes);
           if (prizesResponse.data!.nextPageUrl == null) {
             _uncollectedHasMoreData = false;
           } else {
@@ -129,7 +135,8 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
       _collectedIsLoadingMore = false;
     }
 
-    if (!_collectedHasMoreData && !isRefresh) {
+    if (!_collectedHasMoreData && !isRefresh && _collectedPrizes.isNotEmpty) {
+      // فقط أرسل النجاح إذا كانت هناك بيانات لعرضها بالفعل
       emit(
         PrizesState.success(
           PrizesResponse(data: PrizesData(data: _collectedPrizes)),
@@ -144,13 +151,17 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
     final result = await prizesRepo.getPrizes(
       page: _collectedCurrentPage,
-      collected: 1,
+      collected: 1, // Request collected prizes
     );
 
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          _collectedPrizes.addAll(prizesResponse.data!.data!);
+          // Explicitly filter to ensure only collected prizes are added
+          final filteredPrizes = prizesResponse.data!.data!
+              .where((item) => item.collected == 1)
+              .toList();
+          _collectedPrizes.addAll(filteredPrizes);
           if (prizesResponse.data!.nextPageUrl == null) {
             _collectedHasMoreData = false;
           } else {
@@ -186,6 +197,7 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
     _uncollectedIsLoadingMore = true;
 
+    // لا تصدر حالة تحميل جديدة هنا، فقط قم بتحديث القائمة
     emit(
       PrizesState.success(
         PrizesResponse(data: PrizesData(data: _uncollectedPrizes)),
@@ -200,7 +212,11 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          _uncollectedPrizes.addAll(prizesResponse.data!.data!);
+          // Explicitly filter to ensure only uncollected prizes are added
+          final filteredPrizes = prizesResponse.data!.data!
+              .where((item) => item.collected == 0)
+              .toList();
+          _uncollectedPrizes.addAll(filteredPrizes);
           if (prizesResponse.data!.nextPageUrl == null) {
             _uncollectedHasMoreData = false;
           } else {
@@ -238,6 +254,7 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
     _collectedIsLoadingMore = true;
 
+    // لا تصدر حالة تحميل جديدة هنا، فقط قم بتحديث القائمة
     emit(
       PrizesState.success(
         PrizesResponse(data: PrizesData(data: _collectedPrizes)),
@@ -252,7 +269,11 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          _collectedPrizes.addAll(prizesResponse.data!.data!);
+          // Explicitly filter to ensure only collected prizes are added
+          final filteredPrizes = prizesResponse.data!.data!
+              .where((item) => item.collected == 1)
+              .toList();
+          _collectedPrizes.addAll(filteredPrizes);
           if (prizesResponse.data!.nextPageUrl == null) {
             _collectedHasMoreData = false;
           } else {
@@ -278,6 +299,46 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
             error:
                 error.apiErrorModel.message ??
                 'Failed to load more collected prizes',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> collectPrize({
+    required int studentId,
+    required int prizeItemId,
+  }) async {
+    emit(const PrizesState.loading());
+
+    final result = await prizesRepo.collectPrize(
+      studentId: studentId,
+      prizeItemId: prizeItemId,
+    );
+
+    result.when(
+      success: (_) {
+        getUncollectedPrizes(isRefresh: true); // أعد جلب غير المجمعة لإزالتها
+        getCollectedPrizes(isRefresh: true); // أعد جلب المجمعة لإضافتها
+
+        // أرسل حالة نجاح عامة أو رسالة لتنبيه المستخدم
+        // يمكنك تعديل هذا ليناسب نموذج PrizesResponse الخاص بك بشكل أفضل إذا كان يتطلب data
+        // في هذه الحالة، سنمرر القائمة غير المجمعة كبيانات في حالة النجاح، أو يمكنك إرسال null
+        emit(
+          PrizesState.success(
+            PrizesResponse(
+              message: "Prize collected successfully!",
+              // يمكنك تعيين data إلى قائمة الجوائز المحدثة (مثلاً uncollectedPrizes)
+              // أو إلى null إذا لم يكن هناك نموذج بيانات محدد للاستجابة الناجحة
+              data: PrizesData(data: uncollectedPrizes),
+            ),
+          ),
+        );
+      },
+      failure: (error) {
+        emit(
+          PrizesState.error(
+            error: error.apiErrorModel.message ?? 'Failed to collect prize',
           ),
         );
       },

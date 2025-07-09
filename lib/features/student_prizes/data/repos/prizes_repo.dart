@@ -1,9 +1,10 @@
+// lib/features/student_prizes/data/repos/prizes_repo.dart
 import 'package:english_club/core/networking/api_error_handler.dart';
-
 import 'package:english_club/core/networking/api_error_model.dart';
 import 'package:english_club/core/networking/api_service.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
-import 'package:english_club/core/networking/api_result.dart'; // Assuming you have this
+import 'package:english_club/core/networking/api_result.dart';
+import 'package:dio/dio.dart'; // تأكد من استيراد Dio لمعالجة DioException
 
 class PrizesRepo {
   final ApiService _apiService;
@@ -21,10 +22,17 @@ class PrizesRepo {
       return ApiResult.failure(ErrorHandler.handle(error));
     }
   }
-}
 
-// And in your ApiService (e.g., api_service.dart)
-// Make sure your API service can accept the 'collected' parameter.
-// Example:
-// @GET("prizes")
-// Future<PrizesResponse> getPrizes(@Query("page") int page, @Query("collected") int? collected);
+  Future<ApiResult<void>> collectPrize({
+    required int studentId,
+    required int prizeItemId,
+  }) async {
+    try {
+      final response = await _apiService.collectPrize(studentId, prizeItemId);
+
+      return const ApiResult.success(null); // لا توجد بيانات للعودة، فقط نجاح
+    } catch (error) {
+      return ApiResult.failure(ErrorHandler.handle(error));
+    }
+  }
+}

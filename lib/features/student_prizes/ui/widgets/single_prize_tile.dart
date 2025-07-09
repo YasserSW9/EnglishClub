@@ -12,14 +12,12 @@ class SinglePrizeTile extends StatelessWidget {
   final PrizeItem prizeItem;
   final int index;
   final TabController tabController;
-  final Function() onPrizeCollected;
 
   const SinglePrizeTile({
     super.key,
     required this.prizeItem,
     required this.index,
     required this.tabController,
-    required this.onPrizeCollected,
   });
 
   @override
@@ -32,18 +30,18 @@ class SinglePrizeTile extends StatelessWidget {
         profilePictureUrl: prizeItem.giveItTo?.profilePicture,
       ),
       title: Text(
-        prizeItem.giveItTo?.name ?? "Unknown Student",
-        style: DefaultTextStyle.of(context).style,
+        prizeItem.giveItTo?.name ?? "N/A",
+        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (prizeItem.collected == 0)
+          if (prizeItem.collected == 0) // Show checkbox only if not collected
             SizedBox(
               width: 24.w,
               height: 24.h,
               child: Checkbox(
-                value: false,
+                value: false, // Always false initially, as it triggers action
                 onChanged: (bool? newValue) {
                   AwesomeDialog(
                     context: context,
@@ -55,8 +53,22 @@ class SinglePrizeTile extends StatelessWidget {
                     btnCancelText: "No",
                     btnOkText: "Yes",
                     btnOkOnPress: () {
-                      onPrizeCollected(); // Call the callback to trigger collection and refresh
-                      tabController.animateTo(1); // Switch to collected tab
+                      if (prizeItem.studentId != null && prizeItem.id != null) {
+                        context.read<PrizesCubit>().collectPrize(
+                          studentId: prizeItem.studentId!,
+                          prizeItemId: prizeItem.prizeId!,
+                        );
+
+                        tabController.animateTo(1); // Switch to collected tab
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Error: Student ID or Prize Item ID is missing.',
+                            ),
+                          ),
+                        );
+                      }
                     },
                     btnCancelOnPress: () {},
                   ).show();
