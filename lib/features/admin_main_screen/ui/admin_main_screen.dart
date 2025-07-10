@@ -1,4 +1,5 @@
 // lib/admin_main_screen.dart
+import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/custom_app_bar.dart';
@@ -24,12 +25,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
       ),
     ),
-    Center(
-      child: Text(
-        'Profile Page Content',
-        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-      ),
-    ),
+    ProfilePage(),
   ];
 
   @override

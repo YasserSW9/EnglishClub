@@ -18,7 +18,7 @@ void main(List<String> args) async {
   if (token != null && token.isNotEmpty) {
     initialRoute = Routes.adminMainScreen;
   } else {
-    initialRoute = Routes.onboarding;
+    initialRoute = Routes.adminMainScreen;
   }
 
   runApp(EnglishClub(appRouter: AppRouter(), initialRoute: initialRoute));

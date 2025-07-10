@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
 import 'package:english_club/features/student_prizes/data/repos/prizes_repo.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_state.dart';
-import 'package:flutter/material.dart'; // ضروري لـ ScrollController
+import 'package:flutter/material.dart';
 
 class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
   final PrizesRepo prizesRepo;
@@ -92,7 +92,6 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          // Explicitly filter to ensure only uncollected prizes are added
           final filteredPrizes = prizesResponse.data!.data!
               .where((item) => item.collected == 0)
               .toList();
@@ -136,7 +135,6 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     }
 
     if (!_collectedHasMoreData && !isRefresh && _collectedPrizes.isNotEmpty) {
-      // فقط أرسل النجاح إذا كانت هناك بيانات لعرضها بالفعل
       emit(
         PrizesState.success(
           PrizesResponse(data: PrizesData(data: _collectedPrizes)),
@@ -157,7 +155,6 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          // Explicitly filter to ensure only collected prizes are added
           final filteredPrizes = prizesResponse.data!.data!
               .where((item) => item.collected == 1)
               .toList();
@@ -191,13 +188,11 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     );
   }
 
-  // Load More Uncollected Prizes
   Future<void> loadMoreUncollectedPrizes() async {
     if (!_uncollectedHasMoreData || _uncollectedIsLoadingMore) return;
 
     _uncollectedIsLoadingMore = true;
 
-    // لا تصدر حالة تحميل جديدة هنا، فقط قم بتحديث القائمة
     emit(
       PrizesState.success(
         PrizesResponse(data: PrizesData(data: _uncollectedPrizes)),
@@ -212,7 +207,6 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          // Explicitly filter to ensure only uncollected prizes are added
           final filteredPrizes = prizesResponse.data!.data!
               .where((item) => item.collected == 0)
               .toList();
@@ -248,13 +242,11 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     );
   }
 
-  // Load More Collected Prizes
   Future<void> loadMoreCollectedPrizes() async {
     if (!_collectedHasMoreData || _collectedIsLoadingMore) return;
 
     _collectedIsLoadingMore = true;
 
-    // لا تصدر حالة تحميل جديدة هنا، فقط قم بتحديث القائمة
     emit(
       PrizesState.success(
         PrizesResponse(data: PrizesData(data: _collectedPrizes)),
@@ -269,7 +261,6 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
     result.when(
       success: (prizesResponse) {
         if (prizesResponse.data?.data != null) {
-          // Explicitly filter to ensure only collected prizes are added
           final filteredPrizes = prizesResponse.data!.data!
               .where((item) => item.collected == 1)
               .toList();
@@ -318,18 +309,14 @@ class PrizesCubit extends Cubit<PrizesState<PrizesResponse>> {
 
     result.when(
       success: (_) {
-        getUncollectedPrizes(isRefresh: true); // أعد جلب غير المجمعة لإزالتها
-        getCollectedPrizes(isRefresh: true); // أعد جلب المجمعة لإضافتها
+        getUncollectedPrizes(isRefresh: true);
+        getCollectedPrizes(isRefresh: true);
 
-        // أرسل حالة نجاح عامة أو رسالة لتنبيه المستخدم
-        // يمكنك تعديل هذا ليناسب نموذج PrizesResponse الخاص بك بشكل أفضل إذا كان يتطلب data
-        // في هذه الحالة، سنمرر القائمة غير المجمعة كبيانات في حالة النجاح، أو يمكنك إرسال null
         emit(
           PrizesState.success(
             PrizesResponse(
               message: "Prize collected successfully!",
-              // يمكنك تعيين data إلى قائمة الجوائز المحدثة (مثلاً uncollectedPrizes)
-              // أو إلى null إذا لم يكن هناك نموذج بيانات محدد للاستجابة الناجحة
+
               data: PrizesData(data: uncollectedPrizes),
             ),
           ),
