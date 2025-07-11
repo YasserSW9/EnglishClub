@@ -7,6 +7,7 @@ class ApiConstants {
   static const String adminViewPrizes = "admin/viewPrizes?page=1";
   static const String collectPrize =
       "admin/students/{student_id}/collectedPrize/{prize_item_id}";
+  static const String getAdminData = "admin/admins";
 
   static List<String> wisdoms = [
     'Learning is a journey, not a destination. Embrace the process and be patient with yourself along the way.',

@@ -1,11 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/helpers/cache_manage_memory.dart';
 import 'package:english_club/core/routing/approuter.dart';
 import 'package:english_club/core/routing/routes.dart';
-import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +17,7 @@ void main(List<String> args) async {
   if (token != null && token.isNotEmpty) {
     initialRoute = Routes.adminMainScreen;
   } else {
-    initialRoute = Routes.adminMainScreen;
+    initialRoute = Routes.onboarding;
   }
 
   runApp(EnglishClub(appRouter: AppRouter(), initialRoute: initialRoute));

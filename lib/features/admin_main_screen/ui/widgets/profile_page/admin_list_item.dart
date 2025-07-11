@@ -18,7 +18,8 @@ class AdminListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white54,
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 13.0),
+      shadowColor: Colors.yellowAccent,
+      margin: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 13.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(

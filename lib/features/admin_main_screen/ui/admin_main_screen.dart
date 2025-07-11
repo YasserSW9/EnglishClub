@@ -14,7 +14,7 @@ class AdminMainScreen extends StatefulWidget {
 }
 
 class _AdminMainScreenState extends State<AdminMainScreen> {
-  int _currentBottomNavIndex = 0;
+  int _currentBottomNavIndex = 2;
   bool _snackBarShown = false;
 
   final List<Widget> _bottomNavPages = [

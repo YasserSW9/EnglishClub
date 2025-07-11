@@ -1,5 +1,6 @@
 // lib/features/student_prizes/logic/cubit/prizes_cubit.dart
 import 'package:bloc/bloc.dart';
+import 'package:english_club/core/networking/api_result.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
 import 'package:english_club/features/student_prizes/data/repos/prizes_repo.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_state.dart';

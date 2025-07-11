@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
+import 'package:english_club/features/admin_main_screen/data/models/admin_response.dart';
 import 'package:english_club/features/admin_main_screen/data/models/notifications_response.dart';
 import 'package:english_club/features/login/data/models/login_request_body.dart';
 import 'package:english_club/features/login/data/models/login_response.dart';
@@ -31,4 +32,6 @@ abstract class ApiService {
     @Path("student_id") int studentId,
     @Path("prize_item_id") int prizeItemId,
   );
+  @GET(ApiConstants.getAdminData)
+  Future<List<AdminResponse>> getAdminData();
 }

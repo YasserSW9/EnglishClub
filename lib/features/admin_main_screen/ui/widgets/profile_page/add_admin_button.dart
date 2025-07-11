@@ -16,7 +16,7 @@ class AddAdminButton extends StatelessWidget {
 
       borderRadius: BorderRadius.circular(30),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 75.w, vertical: 15.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: Colors.indigo,

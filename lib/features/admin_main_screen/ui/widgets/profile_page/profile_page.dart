@@ -1,11 +1,17 @@
 // lib/profile_page/profile_page.dart
 import 'package:english_club/core/helpers/spacing.dart';
 import 'package:english_club/core/themeing/color_manager.dart';
+import 'package:english_club/features/admin_main_screen/data/models/admin_response.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/admin_cubit.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/admin_state.dart';
 import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/add_admin_button.dart';
 import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/admin_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+// تأكد من استيراد ShimmerAdminListItem الذي أنشأناه للتو
+import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/shimmer_admin_list_item.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,13 +21,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final List<Map<String, String>> admins = [
-    {"name": "admin1"},
-    {"name": "admin2"},
-    {"name": "admin3"},
-  ];
-
   final TextEditingController _newAdminNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AdminCubit>().emitGetAdminData();
+  }
 
   @override
   void dispose() {
@@ -85,9 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
             btnOkText: 'OK',
             btnOkColor: Colors.green,
             btnOkOnPress: () {
-              setState(() {
-                admins.add({"name": newAdminName});
-              });
+              context.read<AdminCubit>().emitGetAdminData();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('$newAdminName has been added!'),
@@ -119,9 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
       desc: 'Are you sure you want to delete $adminName?',
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        setState(() {
-          admins.removeAt(index);
-        });
+        context.read<AdminCubit>().emitGetAdminData();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('$adminName has been removed'),
@@ -150,14 +152,48 @@ class _ProfilePageState extends State<ProfilePage> {
           AddAdminButton(onTap: _addNewAdmin),
           verticalSpacing(20),
           Expanded(
-            child: ListView.builder(
-              itemCount: admins.length,
-              itemBuilder: (context, i) {
-                final String adminName = admins[i]['name']!;
-                // Using the custom AdminListItem widget
-                return AdminListItem(
-                  adminName: adminName,
-                  onDelete: () => _deleteAdmin(i, adminName),
+            child: BlocConsumer<AdminCubit, AdminState>(
+              listener: (context, state) {
+                state.whenOrNull(
+                  error: (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(error),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  },
+                );
+              },
+              builder: (context, state) {
+                return state.when(
+                  initial: () => const SizedBox.shrink(),
+                  loading: () {
+                    // هنا نستبدل CircularProgressIndicator بـ Shimmer effect
+                    return ListView.builder(
+                      itemCount: 5, // يمكنك عرض عدد من عناصر الشيمر
+                      itemBuilder: (context, index) =>
+                          const ShimmerAdminListItem(),
+                    );
+                  },
+                  success: (adminsData) {
+                    final List<AdminResponse> admins = adminsData;
+                    if (admins.isEmpty) {
+                      return const Center(child: Text('No admins found.'));
+                    }
+                    return ListView.builder(
+                      itemCount: admins.length,
+                      itemBuilder: (context, i) {
+                        final String adminName = admins[i].name ?? 'N/A';
+                        return AdminListItem(
+                          adminName: adminName,
+                          onDelete: () => _deleteAdmin(i, adminName),
+                        );
+                      },
+                    );
+                  },
+                  error: (error) =>
+                      Center(child: Text('Failed to load admins: $error')),
                 );
               },
             ),
