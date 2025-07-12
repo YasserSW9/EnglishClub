@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
 import 'package:english_club/features/admin_main_screen/data/models/admin_response.dart';
+import 'package:english_club/features/admin_main_screen/data/models/create_admin_request_body.dart';
+import 'package:english_club/features/admin_main_screen/data/models/create_admin_response.dart';
+import 'package:english_club/features/admin_main_screen/data/models/delete_response.dart';
 import 'package:english_club/features/admin_main_screen/data/models/notifications_response.dart';
 import 'package:english_club/features/login/data/models/login_request_body.dart';
 import 'package:english_club/features/login/data/models/login_response.dart';
@@ -34,4 +37,12 @@ abstract class ApiService {
   );
   @GET(ApiConstants.getAdminData)
   Future<List<AdminResponse>> getAdminData();
+  @DELETE("admin/admins/{delete_admin_id}")
+  Future<DeleteResponse> deleteAdmin(
+    @Path("delete_admin_id") String deleteAdminId,
+  );
+  @POST(ApiConstants.createAdmin)
+  Future<CreateAdminResponse> createAdmin(
+    @Body() CreateAdminRequestBody createAdminRequestBody,
+  );
 }

@@ -8,6 +8,8 @@ class ApiConstants {
   static const String collectPrize =
       "admin/students/{student_id}/collectedPrize/{prize_item_id}";
   static const String getAdminData = "admin/admins";
+  static const String deleteAdmin = "admin/admins/{delete_admin_id}";
+  static const String createAdmin = "admin/admins";
 
   static List<String> wisdoms = [
     'Learning is a journey, not a destination. Embrace the process and be patient with yourself along the way.',

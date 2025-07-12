@@ -1,6 +1,8 @@
 import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/routing/routes.dart';
 import 'package:english_club/features/admin_main_screen/logic/cubit/admin_cubit.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/create_admin_cubit.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/delete_admin_cubit.dart';
 import 'package:english_club/features/admin_main_screen/ui/admin_main_screen.dart';
 import 'package:english_club/features/admin_main_screen/logic/cubit/notifications_cubit.dart';
 import 'package:english_club/features/english_club/ui/english_club.dart';
@@ -38,6 +40,8 @@ class AppRouter {
             providers: [
               BlocProvider(create: (context) => getIt<NotificationsCubit>()),
               BlocProvider(create: (context) => getIt<AdminCubit>()),
+              BlocProvider(create: (context) => getIt<DeleteAdminCubit>()),
+              BlocProvider(create: (context) => getIt<CreateAdminCubit>()),
             ],
             child: AdminMainScreen(),
           ),

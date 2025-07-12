@@ -1,8 +1,12 @@
 import 'package:english_club/core/networking/api_service.dart';
 import 'package:english_club/core/networking/dio_factory.dart';
 import 'package:english_club/features/admin_main_screen/data/repos/admin_repo.dart';
+import 'package:english_club/features/admin_main_screen/data/repos/create_admin_repo.dart';
+import 'package:english_club/features/admin_main_screen/data/repos/delete_admin_repo.dart';
 import 'package:english_club/features/admin_main_screen/data/repos/notifications_repo.dart';
 import 'package:english_club/features/admin_main_screen/logic/cubit/admin_cubit.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/create_admin_cubit.dart';
+import 'package:english_club/features/admin_main_screen/logic/cubit/delete_admin_cubit.dart';
 import 'package:english_club/features/admin_main_screen/logic/cubit/notifications_cubit.dart';
 import 'package:english_club/features/login/data/repos/login_repo.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
@@ -33,4 +37,14 @@ Future<void> setupGetIt() async {
   // view all admins
   getIt.registerLazySingleton<AdminRepo>(() => AdminRepo(getIt()));
   getIt.registerLazySingleton<AdminCubit>(() => AdminCubit(getIt()));
+  //Delete admin
+  getIt.registerLazySingleton<DeleteAdminRepo>(() => DeleteAdminRepo(getIt()));
+  getIt.registerLazySingleton<DeleteAdminCubit>(
+    () => DeleteAdminCubit(getIt()),
+  );
+  // Create admin
+  getIt.registerLazySingleton<CreateAdminRepo>(() => CreateAdminRepo(getIt()));
+  getIt.registerLazySingleton<CreateAdminCubit>(
+    () => CreateAdminCubit(getIt()),
+  );
 }
