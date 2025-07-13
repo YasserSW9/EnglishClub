@@ -1,9 +1,10 @@
 import 'package:english_club/features/todo_tasks/ui/widgets/task_card.dart';
 import 'package:flutter/material.dart';
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // Import your models
 
 class WaitingTaskList extends StatelessWidget {
-  final List<Map<String, dynamic>> tasks;
-  final Function(Map<String, dynamic>, int) onMarkAsDone;
+  final List<Waiting> tasks; // Changed type to List<Waiting>
+  final Function(Waiting, int) onMarkAsDone;
 
   const WaitingTaskList({
     Key? key,

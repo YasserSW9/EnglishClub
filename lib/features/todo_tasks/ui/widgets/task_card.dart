@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // Import your models
 
 class TaskCard extends StatelessWidget {
-  final Map<String, dynamic> task;
+  final Object task;
   final bool isWaitingList;
   final ValueChanged<bool?>? onChanged;
 
@@ -14,11 +16,33 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String requiredAction = ''; // Changed from 'message' to 'requiredAction'
+    String issuedAt = '';
+    String? doneAt;
+    String? doneBy;
+    bool isDone = false;
+
+    if (isWaitingList) {
+      final waitingTask = task as Waiting;
+      requiredAction =
+          waitingTask.requiredAction ?? 'N/A'; // Use requiredAction
+      issuedAt = waitingTask.issuedAt ?? 'N/A';
+      isDone = waitingTask.done == 1; // Assuming 1 for done, 0 for waiting
+    } else {
+      final doneTask = task as DoneData;
+      requiredAction = doneTask.requiredAction ?? 'N/A'; // Use requiredAction
+      issuedAt = doneTask.issuedAt ?? 'N/A';
+      doneAt = doneTask.doneAt ?? 'N/A';
+      doneBy =
+          doneTask.doneByAdmin?.name ?? 'N/A'; // Access name from doneByAdmin
+      isDone = doneTask.done == 1; // Assuming 1 for done, 0 for waiting
+    }
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      color: task['isDone']
+      margin: EdgeInsets.symmetric(vertical: 9.h),
+      color: isDone
           ? const Color.fromARGB(255, 219, 236, 220)
-          : Colors.white,
+          : const Color.fromARGB(255, 245, 230, 230),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -29,7 +53,8 @@ class TaskCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Please return \'${task['story']}\' story from student \'${task['student']}\'.',
+                    // Display the requiredAction
+                    requiredAction,
                     style: const TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
@@ -37,17 +62,17 @@ class TaskCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    'Issued at : ${task['issued']}',
+                    'Issued at : $issuedAt',
                     style: TextStyle(fontSize: 12.0, color: Colors.grey[700]),
                   ),
-                  if (task['isDone']) ...[
+                  if (isDone) ...[
                     const SizedBox(height: 4.0),
                     Text(
-                      'Done at : ${task['doneAt']}',
+                      'Done at : ${doneAt ?? 'N/A'}',
                       style: TextStyle(fontSize: 12.0, color: Colors.grey[700]),
                     ),
                     Text(
-                      'Done by : ${task['doneBy']}',
+                      'Done by : ${doneBy ?? 'N/A'}',
                       style: TextStyle(fontSize: 12.0, color: Colors.grey[700]),
                     ),
                   ],
@@ -55,7 +80,7 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             Checkbox(
-              value: task['isDone'],
+              value: isDone,
               onChanged: onChanged,
               activeColor: const Color(0xFF66BB6A),
             ),

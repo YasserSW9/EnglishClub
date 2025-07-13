@@ -3,8 +3,14 @@ import 'package:english_club/features/todo_tasks/ui/widgets/done_task_list.dart'
 import 'package:english_club/features/todo_tasks/ui/widgets/waiting_task_list.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import flutter_bloc
+import 'package:english_club/features/todo_tasks/logic/cubit/tasks_cubit.dart'; // Import your cubit
+import 'package:english_club/features/todo_tasks/logic/cubit/tasks_state.dart'; // Import your state
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // Import your models
 
 class TodoTasks extends StatefulWidget {
+  const TodoTasks({super.key});
+
   @override
   _TodoTasksState createState() => _TodoTasksState();
 }
@@ -13,90 +19,11 @@ class _TodoTasksState extends State<TodoTasks>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  List<Map<String, dynamic>> waitingTasks = [
-    {
-      'story': 'Wheels',
-      'student': 'Yahiaa Khalaf',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'Eyes',
-      'student': 'Yahiaa Khalaf',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'Sinbad',
-      'student': 'Wissam Trkmany',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'Wheels',
-      'student': 'Malaz Al-shora',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'At the beach',
-      'student': 'Malaz Al-shora',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'the mystery of manor hall',
-      'student': 'Obada Feroun',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-    {
-      'story': 'the mystery of manor hall',
-      'student': 'Hamdi Al-',
-      'issued': '2025-03-05 00:00:04',
-      'isDone': false,
-    },
-  ];
-
-  List<Map<String, dynamic>> doneTasks = [
-    {
-      'story': 'Eyes',
-      'student': 'Oways Al-jaghagy',
-      'issued': '2025-06-26 19:13:20',
-      'doneAt': '2025-06-26 11:13:20',
-      'doneBy': 'fares',
-      'isDone': true,
-    },
-    {
-      'story': 'Young animals',
-      'student': 'Anwar mohamad',
-      'issued': '2025-05-07 16:06:46',
-      'doneAt': '2025-05-07 08:06:46',
-      'doneBy': 'fares',
-      'isDone': true,
-    },
-    {
-      'story': 'The giant\'s causeway',
-      'student': 'Hamza Al-Halabe',
-      'issued': '2025-04-30 17:15:45',
-      'doneAt': '2025-04-30 09:15:45',
-      'doneBy': 'fares',
-      'isDone': true,
-    },
-    {
-      'story': 'The future of a village',
-      'student': 'Nour Aldden Zeelnoon',
-      'issued': '2025-04-30 15:53:56',
-      'doneAt': '2025-04-30 07:53:56',
-      'doneBy': 'fares',
-      'isDone': true,
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    context.read<TasksCubit>().emitGetTasks();
   }
 
   @override
@@ -105,31 +32,19 @@ class _TodoTasksState extends State<TodoTasks>
     super.dispose();
   }
 
-  void _markTaskAsDone(Map<String, dynamic> task, int index) {
+  void _markTaskAsDone(Waiting task, int index) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.question,
       animType: AnimType.rightSlide,
-      title: 'Confirm Task Completion',
-      desc:
-          'Are you sure you want to mark this task as done?\n\n'
-          'Story: ${task['story']}\nStudent: ${task['student']}',
+      title: 'Confirm Task Completion\n',
+      desc: 'Are you sure you want to mark this task as done?\n',
       btnCancelText: 'Cancel',
       btnOkText: 'Confirm',
-      btnCancelOnPress: () {
-        // No action on cancel
-      },
+      btnCancelOnPress: () {},
       btnOkOnPress: () {
-        setState(() {
-          task['isDone'] = true;
-          task['doneAt'] = DateTime.now().toString().substring(0, 19);
-          task['doneBy'] = 'Current User';
-
-          waitingTasks.removeAt(index);
-          doneTasks.insert(0, task);
-
-          _tabController.animateTo(1);
-        });
+        context.read<TasksCubit>().emitGetTasks();
+        _tabController.animateTo(1); // Move to done tab
       },
     ).show();
   }
@@ -153,7 +68,7 @@ class _TodoTasksState extends State<TodoTasks>
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.black54,
+          unselectedLabelColor: Colors.grey,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(text: 'Waiting'),
@@ -161,12 +76,26 @@ class _TodoTasksState extends State<TodoTasks>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          WaitingTaskList(tasks: waitingTasks, onMarkAsDone: _markTaskAsDone),
-          DoneTaskList(tasks: doneTasks),
-        ],
+      body: BlocBuilder<TasksCubit, TasksState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const Center(child: Text('Initialize tasks...')),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            success: (doneTasks, waitingTasks) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  WaitingTaskList(
+                    tasks: waitingTasks,
+                    onMarkAsDone: _markTaskAsDone,
+                  ),
+                  DoneTaskList(tasks: doneTasks),
+                ],
+              );
+            },
+            error: (error) => Center(child: Text('Error: $error')),
+          );
+        },
       ),
     );
   }

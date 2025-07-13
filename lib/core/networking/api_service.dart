@@ -8,6 +8,7 @@ import 'package:english_club/features/admin_main_screen/data/models/notification
 import 'package:english_club/features/login/data/models/login_request_body.dart';
 import 'package:english_club/features/login/data/models/login_response.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart';
 
 import 'package:retrofit/retrofit.dart';
 
@@ -45,4 +46,6 @@ abstract class ApiService {
   Future<CreateAdminResponse> createAdmin(
     @Body() CreateAdminRequestBody createAdminRequestBody,
   );
+  @GET(ApiConstants.getTasks)
+  Future<TasksResponse> getTasks();
 }

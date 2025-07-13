@@ -1,8 +1,9 @@
 import 'package:english_club/features/todo_tasks/ui/widgets/task_card.dart';
 import 'package:flutter/material.dart';
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // Import your models
 
 class DoneTaskList extends StatelessWidget {
-  final List<Map<String, dynamic>> tasks;
+  final List<DoneData> tasks; // Changed type to List<DoneData>
 
   const DoneTaskList({Key? key, required this.tasks}) : super(key: key);
 
