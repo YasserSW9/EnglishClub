@@ -1,6 +1,6 @@
 import 'package:english_club/core/helpers/extensions.dart';
 import 'package:english_club/features/todo_tasks/ui/widgets/done_task_list.dart';
-import 'package:english_club/features/todo_tasks/ui/widgets/shimmer_loading.dart'; // import for ShimmerLoading and TaskCardShimmer
+import 'package:english_club/features/todo_tasks/ui/widgets/shimmer_loading.dart';
 import 'package:english_club/features/todo_tasks/ui/widgets/waiting_task_list.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -97,9 +97,11 @@ class _TodoTasksState extends State<TodoTasks>
       ),
       body: BlocBuilder<TasksCubit, TasksState>(
         builder: (context, state) {
-          final tasksCubit = context.read<TasksCubit>();
+          final tasksCubit = context.read<TasksCubit>(); // احصل على Cubit هنا
 
+          // تحديد isLoadingMore بناءً على حالة Cubit
           final bool isLoadingMore = state is LoadingMore;
+          // الحصول على hasMoreData مباشرة من Cubit
           final bool hasMoreData = tasksCubit.hasMoreData;
 
           return state.when(
@@ -120,6 +122,7 @@ class _TodoTasksState extends State<TodoTasks>
               );
             },
             success: (doneTasks, waitingTasks) {
+              // تم إزالة currentPage و hasMoreData
               return TabBarView(
                 controller: _tabController,
                 children: [
@@ -127,14 +130,16 @@ class _TodoTasksState extends State<TodoTasks>
                     tasks: waitingTasks,
                     onMarkAsDone: _markTaskAsDone,
                     scrollController: _waitingScrollController,
-                    hasMoreData: hasMoreData,
-                    isLoadingMore: isLoadingMore,
+                    hasMoreData: hasMoreData, // استخدم hasMoreData من Cubit
+                    isLoadingMore:
+                        isLoadingMore, // استخدم isLoadingMore من الحالة
                   ),
                   DoneTaskList(
                     tasks: doneTasks,
                     scrollController: _doneScrollController,
-                    hasMoreData: hasMoreData,
-                    isLoadingMore: isLoadingMore,
+                    hasMoreData: hasMoreData, // استخدم hasMoreData من Cubit
+                    isLoadingMore:
+                        isLoadingMore, // استخدم isLoadingMore من الحالة
                   ),
                 ],
               );
@@ -143,8 +148,11 @@ class _TodoTasksState extends State<TodoTasks>
               List<DoneData> doneTasks = [];
               List<Waiting> waitingTasks = [];
 
+              // الوصول إلى البيانات من الحالة السابقة باستخدام maybeWhen
+              // الحالة loadingMore لا تحتوي على البيانات مباشرة، لذا نأخذها من آخر حالة نجاح
               tasksCubit.state.maybeWhen(
                 success: (_doneTasks, _waitingTasks) {
+                  // تم إزالة currentPage و hasMoreData
                   doneTasks = _doneTasks;
                   waitingTasks = _waitingTasks;
                 },
