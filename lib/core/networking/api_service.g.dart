@@ -217,9 +217,12 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<TasksResponse> getTasks() async {
+  Future<TasksResponse> getTasks(int page, int perPage) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'per_page': perPage,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<TasksResponse>(

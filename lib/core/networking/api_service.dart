@@ -47,5 +47,8 @@ abstract class ApiService {
     @Body() CreateAdminRequestBody createAdminRequestBody,
   );
   @GET(ApiConstants.getTasks)
-  Future<TasksResponse> getTasks();
+  Future<TasksResponse> getTasks(
+    @Query("page") int page,
+    @Query("per_page") int perPage,
+  );
 }

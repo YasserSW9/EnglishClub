@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // Import your models
+import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart'; // استيراد الموديلات
 
 class TaskCard extends StatelessWidget {
   final Object task;
@@ -16,26 +16,32 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String requiredAction = ''; // Changed from 'message' to 'requiredAction'
+    String requiredAction = '';
     String issuedAt = '';
     String? doneAt;
     String? doneBy;
+    String storyTitle = 'N/A';
+    String studentName = 'N/A';
     bool isDone = false;
 
     if (isWaitingList) {
       final waitingTask = task as Waiting;
-      requiredAction =
-          waitingTask.requiredAction ?? 'N/A'; // Use requiredAction
+      requiredAction = waitingTask.requiredAction ?? 'N/A';
       issuedAt = waitingTask.issuedAt ?? 'N/A';
-      isDone = waitingTask.done == 1; // Assuming 1 for done, 0 for waiting
+      isDone = waitingTask.done == 1;
+
+      storyTitle = waitingTask.unreturnedStory?.title ?? 'N/A';
+      studentName = waitingTask.student?.name ?? 'N/A';
     } else {
       final doneTask = task as DoneData;
-      requiredAction = doneTask.requiredAction ?? 'N/A'; // Use requiredAction
+      requiredAction = doneTask.requiredAction ?? 'N/A';
       issuedAt = doneTask.issuedAt ?? 'N/A';
       doneAt = doneTask.doneAt ?? 'N/A';
-      doneBy =
-          doneTask.doneByAdmin?.name ?? 'N/A'; // Access name from doneByAdmin
-      isDone = doneTask.done == 1; // Assuming 1 for done, 0 for waiting
+      doneBy = doneTask.doneByAdmin?.name ?? 'N/A';
+      isDone = doneTask.done == 1;
+
+      storyTitle = doneTask.unreturnedStory?.title ?? 'N/A';
+      studentName = doneTask.student?.name ?? 'N/A';
     }
 
     return Card(
@@ -53,8 +59,7 @@ class TaskCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    // Display the requiredAction
-                    requiredAction,
+                    'Please return \'${storyTitle}\' story from student \'${studentName}\'.',
                     style: const TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,

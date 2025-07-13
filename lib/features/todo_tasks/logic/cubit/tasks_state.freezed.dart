@@ -55,12 +55,13 @@ extension TasksStatePatterns<T> on TasksState<T> {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial<T> value)?  initial,TResult Function( Loading<T> value)?  loading,TResult Function( Success<T> value)?  success,TResult Function( Error<T> value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial<T> value)?  initial,TResult Function( Loading<T> value)?  loading,TResult Function( LoadingMore<T> value)?  loadingMore,TResult Function( Success<T> value)?  success,TResult Function( Error<T> value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case Loading() when loading != null:
-return loading(_that);case Success() when success != null:
+return loading(_that);case LoadingMore() when loadingMore != null:
+return loadingMore(_that);case Success() when success != null:
 return success(_that);case Error() when error != null:
 return error(_that);case _:
   return orElse();
@@ -80,12 +81,13 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial<T> value)  initial,required TResult Function( Loading<T> value)  loading,required TResult Function( Success<T> value)  success,required TResult Function( Error<T> value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial<T> value)  initial,required TResult Function( Loading<T> value)  loading,required TResult Function( LoadingMore<T> value)  loadingMore,required TResult Function( Success<T> value)  success,required TResult Function( Error<T> value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case Loading():
-return loading(_that);case Success():
+return loading(_that);case LoadingMore():
+return loadingMore(_that);case Success():
 return success(_that);case Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
@@ -104,12 +106,13 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial<T> value)?  initial,TResult? Function( Loading<T> value)?  loading,TResult? Function( Success<T> value)?  success,TResult? Function( Error<T> value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial<T> value)?  initial,TResult? Function( Loading<T> value)?  loading,TResult? Function( LoadingMore<T> value)?  loadingMore,TResult? Function( Success<T> value)?  success,TResult? Function( Error<T> value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case Loading() when loading != null:
-return loading(_that);case Success() when success != null:
+return loading(_that);case LoadingMore() when loadingMore != null:
+return loadingMore(_that);case Success() when success != null:
 return success(_that);case Error() when error != null:
 return error(_that);case _:
   return null;
@@ -128,11 +131,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)?  success,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  loadingMore,TResult Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)?  success,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case Loading() when loading != null:
-return loading();case Success() when success != null:
+return loading();case LoadingMore() when loadingMore != null:
+return loadingMore();case Success() when success != null:
 return success(_that.doneTasks,_that.waitingTasks);case Error() when error != null:
 return error(_that.error);case _:
   return orElse();
@@ -152,11 +156,12 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)  success,required TResult Function( String error)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  loadingMore,required TResult Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)  success,required TResult Function( String error)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case Loading():
-return loading();case Success():
+return loading();case LoadingMore():
+return loadingMore();case Success():
 return success(_that.doneTasks,_that.waitingTasks);case Error():
 return error(_that.error);case _:
   throw StateError('Unexpected subclass');
@@ -175,11 +180,12 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)?  success,TResult? Function( String error)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  loadingMore,TResult? Function( List<DoneData> doneTasks,  List<Waiting> waitingTasks)?  success,TResult? Function( String error)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case Loading() when loading != null:
-return loading();case Success() when success != null:
+return loading();case LoadingMore() when loadingMore != null:
+return loadingMore();case Success() when success != null:
 return success(_that.doneTasks,_that.waitingTasks);case Error() when error != null:
 return error(_that.error);case _:
   return null;
@@ -256,6 +262,38 @@ String toString() {
 /// @nodoc
 
 
+class LoadingMore<T> implements TasksState<T> {
+  const LoadingMore();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadingMore<T>);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TasksState<$T>.loadingMore()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class Success<T> implements TasksState<T> {
   const Success({required final  List<DoneData> doneTasks, required final  List<Waiting> waitingTasks}): _doneTasks = doneTasks,_waitingTasks = waitingTasks;
   
@@ -267,9 +305,7 @@ class Success<T> implements TasksState<T> {
   return EqualUnmodifiableListView(_doneTasks);
 }
 
-// Using DoneData as the type for done tasks
  final  List<Waiting> _waitingTasks;
-// Using DoneData as the type for done tasks
  List<Waiting> get waitingTasks {
   if (_waitingTasks is EqualUnmodifiableListView) return _waitingTasks;
   // ignore: implicit_dynamic_type
