@@ -8,7 +8,9 @@ import 'package:english_club/features/admin_main_screen/data/models/notification
 import 'package:english_club/features/login/data/models/login_request_body.dart';
 import 'package:english_club/features/login/data/models/login_response.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
+import 'package:english_club/features/todo_tasks/data/models/collect_tasks.dart';
 import 'package:english_club/features/todo_tasks/data/models/tasks_response.dart';
+import 'package:english_club/features/todo_tasks/data/repos/collect_tasks_repo.dart';
 
 import 'package:retrofit/retrofit.dart';
 
@@ -51,4 +53,6 @@ abstract class ApiService {
     @Query("page") int page,
     @Query("per_page") int perPage,
   );
+  @PATCH("admin/todoNotifications/{task_id}/makeDone")
+  Future<CollectTasks> getCollectTasks(@Path("task_id") int taskId);
 }

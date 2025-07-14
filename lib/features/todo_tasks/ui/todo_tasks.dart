@@ -1,4 +1,8 @@
+// lib/features/todo_tasks/ui/todo_tasks.dart
 import 'package:english_club/core/helpers/extensions.dart';
+import 'package:english_club/features/todo_tasks/data/models/collect_tasks.dart';
+import 'package:english_club/features/todo_tasks/logic/cubit/collect_tasks_cubit.dart';
+import 'package:english_club/features/todo_tasks/logic/cubit/collect_tasks_state.dart';
 import 'package:english_club/features/todo_tasks/ui/widgets/done_task_list.dart';
 import 'package:english_club/features/todo_tasks/ui/widgets/shimmer_loading.dart';
 import 'package:english_club/features/todo_tasks/ui/widgets/waiting_task_list.dart';
@@ -26,6 +30,7 @@ class _TodoTasksState extends State<TodoTasks>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Fetch initial tasks when the page initializes
     context.read<TasksCubit>().emitGetTasks();
 
     _waitingScrollController.addListener(() {
@@ -51,6 +56,7 @@ class _TodoTasksState extends State<TodoTasks>
     super.dispose();
   }
 
+  // Function called when the checkbox in WaitingTaskList is tapped
   void _markTaskAsDone(Waiting task, int index) {
     AwesomeDialog(
       context: context,
@@ -62,8 +68,19 @@ class _TodoTasksState extends State<TodoTasks>
       btnOkText: 'Confirm',
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        context.read<TasksCubit>().emitGetTasks();
-        _tabController.animateTo(1);
+        // Invoke the CollectTasksCubit here
+        if (task.id != null) {
+          context.read<CollectTasksCubit>().emitMarkTaskAsDoneState(task.id!);
+        } else {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Error',
+            desc: 'Task ID is missing. Cannot mark as done.',
+            btnOkOnPress: () {},
+          ).show();
+        }
       },
     ).show();
   }
@@ -95,92 +112,133 @@ class _TodoTasksState extends State<TodoTasks>
           ],
         ),
       ),
-      body: BlocBuilder<TasksCubit, TasksState>(
-        builder: (context, state) {
-          final tasksCubit = context.read<TasksCubit>(); // احصل على Cubit هنا
+      // Use MultiBlocListener to listen to both TasksCubit and CollectTasksCubit
+      body: MultiBlocListener(
+        listeners: [
+          // BlocListener for CollectTasksCubit to handle task completion response
+          BlocListener<CollectTasksCubit, CollectTasksState<CollectTasks>>(
+            listener: (context, state) {
+              state.whenOrNull(
+                loading: () {
+                  // Optional: You can show a small loading indicator here
+                  // context.showLoadingDialog(); // Example: if you have a helper function
+                },
+                success: (response) {
+                  // context.pop(); // Close any loading indicator
+                  // Show success message
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.success,
+                    animType: AnimType.rightSlide,
+                    title: 'Success',
+                    desc:
+                        response.message ?? 'Task marked as done successfully!',
+                    btnOkOnPress: () {
+                      // After success: Refresh the main task list
+                      context.read<TasksCubit>().emitGetTasks();
+                      // Navigate to the "Done" tab
+                      _tabController.animateTo(1);
+                    },
+                  ).show();
+                },
+                error: (error) {
+                  // context.pop(); // Close any loading indicator
+                  // Show error message
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.error,
+                    animType: AnimType.rightSlide,
+                    title: 'Error',
+                    desc: error,
+                    btnOkOnPress: () {},
+                  ).show();
+                },
+              );
+            },
+          ),
+        ],
+        child: BlocBuilder<TasksCubit, TasksState>(
+          builder: (context, state) {
+            final tasksCubit = context.read<TasksCubit>();
 
-          // تحديد isLoadingMore بناءً على حالة Cubit
-          final bool isLoadingMore = state is LoadingMore;
-          // الحصول على hasMoreData مباشرة من Cubit
-          final bool hasMoreData = tasksCubit.hasMoreData;
+            final bool isLoadingMore = state is LoadingMore;
+            final bool hasMoreData = tasksCubit.hasMoreData;
 
-          return state.when(
-            initial: () => const Center(child: Text('جاري تهيئة المهام...')),
-            loading: () {
-              return ShimmerLoading(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: List.generate(
-                    2,
-                    (tabIndex) => ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: 5,
-                      itemBuilder: (context, index) => const TaskCardShimmer(),
+            return state.when(
+              initial: () => const Center(child: Text('Initializing Tasks...')),
+              loading: () {
+                return ShimmerLoading(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: List.generate(
+                      2,
+                      (tabIndex) => ListView.builder(
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: 5,
+                        itemBuilder: (context, index) =>
+                            const TaskCardShimmer(),
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-            success: (doneTasks, waitingTasks) {
-              // تم إزالة currentPage و hasMoreData
-              return TabBarView(
-                controller: _tabController,
-                children: [
-                  WaitingTaskList(
-                    tasks: waitingTasks,
-                    onMarkAsDone: _markTaskAsDone,
-                    scrollController: _waitingScrollController,
-                    hasMoreData: hasMoreData, // استخدم hasMoreData من Cubit
-                    isLoadingMore:
-                        isLoadingMore, // استخدم isLoadingMore من الحالة
-                  ),
-                  DoneTaskList(
-                    tasks: doneTasks,
-                    scrollController: _doneScrollController,
-                    hasMoreData: hasMoreData, // استخدم hasMoreData من Cubit
-                    isLoadingMore:
-                        isLoadingMore, // استخدم isLoadingMore من الحالة
-                  ),
-                ],
-              );
-            },
-            loadingMore: () {
-              List<DoneData> doneTasks = [];
-              List<Waiting> waitingTasks = [];
+                );
+              },
+              success: (doneTasks, waitingTasks) {
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    WaitingTaskList(
+                      tasks: waitingTasks,
+                      onMarkAsDone:
+                          _markTaskAsDone, // Pass the function to the Checkbox
+                      scrollController: _waitingScrollController,
+                      hasMoreData: hasMoreData,
+                      isLoadingMore: isLoadingMore,
+                    ),
+                    DoneTaskList(
+                      tasks: doneTasks,
+                      scrollController: _doneScrollController,
+                      hasMoreData: hasMoreData,
+                      isLoadingMore: isLoadingMore,
+                    ),
+                  ],
+                );
+              },
+              loadingMore: () {
+                List<DoneData> doneTasks = [];
+                List<Waiting> waitingTasks = [];
 
-              // الوصول إلى البيانات من الحالة السابقة باستخدام maybeWhen
-              // الحالة loadingMore لا تحتوي على البيانات مباشرة، لذا نأخذها من آخر حالة نجاح
-              tasksCubit.state.maybeWhen(
-                success: (_doneTasks, _waitingTasks) {
-                  // تم إزالة currentPage و hasMoreData
-                  doneTasks = _doneTasks;
-                  waitingTasks = _waitingTasks;
-                },
-                orElse: () {},
-              );
+                tasksCubit.state.maybeWhen(
+                  success: (_doneTasks, _waitingTasks) {
+                    doneTasks = _doneTasks;
+                    waitingTasks = _waitingTasks;
+                  },
+                  orElse: () {},
+                );
 
-              return TabBarView(
-                controller: _tabController,
-                children: [
-                  WaitingTaskList(
-                    tasks: waitingTasks,
-                    onMarkAsDone: _markTaskAsDone,
-                    scrollController: _waitingScrollController,
-                    hasMoreData: hasMoreData,
-                    isLoadingMore: isLoadingMore,
-                  ),
-                  DoneTaskList(
-                    tasks: doneTasks,
-                    scrollController: _doneScrollController,
-                    hasMoreData: hasMoreData,
-                    isLoadingMore: isLoadingMore,
-                  ),
-                ],
-              );
-            },
-            error: (error) => Center(child: Text('حدث خطأ: $error')),
-          );
-        },
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    WaitingTaskList(
+                      tasks: waitingTasks,
+                      onMarkAsDone: _markTaskAsDone, // Pass the function
+                      scrollController: _waitingScrollController,
+                      hasMoreData: hasMoreData,
+                      isLoadingMore: isLoadingMore,
+                    ),
+                    DoneTaskList(
+                      tasks: doneTasks,
+                      scrollController: _doneScrollController,
+                      hasMoreData: hasMoreData,
+                      isLoadingMore: isLoadingMore,
+                    ),
+                  ],
+                );
+              },
+              error: (error) =>
+                  Center(child: Text('An error occurred: $error')),
+            );
+          },
+        ),
       ),
     );
   }

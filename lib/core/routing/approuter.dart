@@ -14,6 +14,7 @@ import 'package:english_club/features/onbording/onboarding.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:english_club/features/student_prizes/ui/student_prizes.dart';
 import 'package:english_club/features/add_students/ui/add_students.dart';
+import 'package:english_club/features/todo_tasks/logic/cubit/collect_tasks_cubit.dart';
 import 'package:english_club/features/todo_tasks/logic/cubit/tasks_cubit.dart';
 import 'package:english_club/features/todo_tasks/ui/todo_tasks.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +57,11 @@ class AppRouter {
         );
       case Routes.todoTaks:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<TasksCubit>(),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<TasksCubit>()),
+              BlocProvider(create: (context) => getIt<CollectTasksCubit>()),
+            ],
             child: TodoTasks(),
           ),
         );

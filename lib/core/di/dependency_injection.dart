@@ -12,7 +12,9 @@ import 'package:english_club/features/login/data/repos/login_repo.dart';
 import 'package:english_club/features/login/logic/cubit/login_cubit.dart';
 import 'package:english_club/features/student_prizes/data/repos/prizes_repo.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
+import 'package:english_club/features/todo_tasks/data/repos/collect_tasks_repo.dart';
 import 'package:english_club/features/todo_tasks/data/repos/tasks_repo.dart';
+import 'package:english_club/features/todo_tasks/logic/cubit/collect_tasks_cubit.dart';
 import 'package:english_club/features/todo_tasks/logic/cubit/tasks_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
@@ -52,4 +54,11 @@ Future<void> setupGetIt() async {
   // GET Tasks
   getIt.registerLazySingleton<TasksRepo>(() => TasksRepo(getIt()));
   getIt.registerLazySingleton<TasksCubit>(() => TasksCubit(getIt()));
+  // Patch tasks
+  getIt.registerLazySingleton<CollectTasksRepo>(
+    () => CollectTasksRepo(getIt()),
+  );
+  getIt.registerLazySingleton<CollectTasksCubit>(
+    () => CollectTasksCubit(getIt()),
+  );
 }

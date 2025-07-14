@@ -1,3 +1,6 @@
+// In tasks_state.dart
+
+// In tasks_cubit.dart
 import 'package:bloc/bloc.dart';
 import 'package:english_club/core/networking/api_result.dart';
 import 'package:english_club/features/todo_tasks/data/repos/tasks_repo.dart';
@@ -55,7 +58,6 @@ class TasksCubit extends Cubit<TasksState> {
           TasksState.success(
             doneTasks: _allDoneTasks,
             waitingTasks: _allWaitingTasks,
-            // تمت إزالة currentPage و hasMoreData من تمريرات الحالة هنا
           ),
         );
       },
@@ -66,10 +68,40 @@ class TasksCubit extends Cubit<TasksState> {
           ),
         );
         if (_currentPage > 1) {
-          _currentPage--;
+          _currentPage--; // Decrement page on error if it was a load more
         }
-        _hasMoreData = false;
       },
+    );
+  }
+
+  // New method to update tasks locally after one is marked as done
+  void markTaskAsDoneLocally(Waiting taskToMove) {
+    // Remove from waiting tasks
+    _allWaitingTasks.removeWhere((task) => task.id == taskToMove.id);
+
+    // Create a DoneData object from the Waiting task and add to done tasks
+    // You might need to adjust this conversion based on your `DoneData` structure
+    final doneDataTask = DoneData(
+      id: taskToMove.id,
+      message: taskToMove.message,
+      requiredAction: taskToMove.requiredAction,
+      done: 1, // Mark as done
+      issuedAt: taskToMove.issuedAt,
+      doneAt: DateTime.now().toIso8601String(), // Set current time
+      adminId: taskToMove.adminId,
+      storyId: taskToMove.storyId,
+      studentId: taskToMove.studentId,
+      // Add other fields from Waiting to DoneData as needed
+    );
+    _allDoneTasks.insert(0, doneDataTask); // Add to the beginning of done list
+
+    emit(
+      TasksState.success(
+        doneTasks: List.from(
+          _allDoneTasks,
+        ), // Create new list instances to ensure state change
+        waitingTasks: List.from(_allWaitingTasks),
+      ),
     );
   }
 }
