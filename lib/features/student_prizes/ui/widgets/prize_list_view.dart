@@ -1,15 +1,14 @@
 // lib/features/prizes/ui/widgets/prize_list_view.dart
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
 import 'package:english_club/features/student_prizes/ui/widgets/single_prize_tile.dart';
-import 'package:english_club/features/student_prizes/ui/widgets/shimmer_loading_widgets.dart'; // تأكد من استيراد الشيمر
+import 'package:english_club/features/student_prizes/ui/widgets/shimmer_loading_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PrizeListView extends StatelessWidget {
   final List<PrizeItem> prizes;
   final TabController tabController;
-  // تم إزالة final Function() onPrizeCollected;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
   final bool isLoadingMore;
   final bool hasMoreData;
 
@@ -17,8 +16,7 @@ class PrizeListView extends StatelessWidget {
     super.key,
     required this.prizes,
     required this.tabController,
-    // تم إزالة required this.onPrizeCollected,
-    required this.scrollController,
+    this.scrollController,
     required this.isLoadingMore,
     required this.hasMoreData,
   });
@@ -37,7 +35,7 @@ class PrizeListView extends StatelessWidget {
     final int itemCount = prizes.length + (_hasFooter ? 1 : 0);
 
     return ListView.builder(
-      controller: scrollController,
+      controller: scrollController, //
       itemCount: itemCount,
       padding: EdgeInsets.symmetric(vertical: 8.h),
       itemBuilder: (context, i) {
@@ -68,18 +66,15 @@ class PrizeListView extends StatelessWidget {
           }
         }
 
-        // Render the regular prize tile
         final prizeItem = prizes[i];
         return SinglePrizeTile(
           prizeItem: prizeItem,
           index: i,
           tabController: tabController,
-          // تم إزالة onPrizeCollected: onPrizeCollected,
         );
       },
     );
   }
 
-  // Helper getter to determine if a footer (loading or end-of-list) should be shown
   bool get _hasFooter => isLoadingMore || !hasMoreData;
 }

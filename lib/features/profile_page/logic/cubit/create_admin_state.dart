@@ -1,4 +1,4 @@
-import 'package:english_club/features/admin_main_screen/data/models/create_admin_response.dart';
+import 'package:english_club/features/profile_page/data/model/create_admin_response.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'create_admin_state.freezed.dart';

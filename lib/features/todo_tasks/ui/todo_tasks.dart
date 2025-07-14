@@ -1,4 +1,3 @@
-// lib/features/todo_tasks/ui/todo_tasks.dart
 import 'package:english_club/core/helpers/extensions.dart';
 import 'package:english_club/features/todo_tasks/data/models/collect_tasks.dart';
 import 'package:english_club/features/todo_tasks/logic/cubit/collect_tasks_cubit.dart';
@@ -30,7 +29,6 @@ class _TodoTasksState extends State<TodoTasks>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // Fetch initial tasks when the page initializes
     context.read<TasksCubit>().emitGetTasks();
 
     _waitingScrollController.addListener(() {
@@ -56,7 +54,6 @@ class _TodoTasksState extends State<TodoTasks>
     super.dispose();
   }
 
-  // Function called when the checkbox in WaitingTaskList is tapped
   void _markTaskAsDone(Waiting task, int index) {
     AwesomeDialog(
       context: context,
@@ -68,7 +65,6 @@ class _TodoTasksState extends State<TodoTasks>
       btnOkText: 'Confirm',
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        // Invoke the CollectTasksCubit here
         if (task.id != null) {
           context.read<CollectTasksCubit>().emitMarkTaskAsDoneState(task.id!);
         } else {
@@ -112,20 +108,13 @@ class _TodoTasksState extends State<TodoTasks>
           ],
         ),
       ),
-      // Use MultiBlocListener to listen to both TasksCubit and CollectTasksCubit
       body: MultiBlocListener(
         listeners: [
-          // BlocListener for CollectTasksCubit to handle task completion response
           BlocListener<CollectTasksCubit, CollectTasksState<CollectTasks>>(
             listener: (context, state) {
               state.whenOrNull(
-                loading: () {
-                  // Optional: You can show a small loading indicator here
-                  // context.showLoadingDialog(); // Example: if you have a helper function
-                },
+                loading: () {},
                 success: (response) {
-                  // context.pop(); // Close any loading indicator
-                  // Show success message
                   AwesomeDialog(
                     context: context,
                     dialogType: DialogType.success,
@@ -134,16 +123,12 @@ class _TodoTasksState extends State<TodoTasks>
                     desc:
                         response.message ?? 'Task marked as done successfully!',
                     btnOkOnPress: () {
-                      // After success: Refresh the main task list
                       context.read<TasksCubit>().emitGetTasks();
-                      // Navigate to the "Done" tab
                       _tabController.animateTo(1);
                     },
                   ).show();
                 },
                 error: (error) {
-                  // context.pop(); // Close any loading indicator
-                  // Show error message
                   AwesomeDialog(
                     context: context,
                     dialogType: DialogType.error,

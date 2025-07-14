@@ -22,15 +22,11 @@ class DioFactory {
     }
   }
 
-  static void setTokenIntoHeaderAfterLogin(String token) {
-    dio?.options.headers = {'Authorization': 'Bearer $token'};
-  }
-
   static void addDioHeaders() async {
     dio?.options.headers = {
       'Accept': 'application/json',
       'Authorization':
-          'Bearer ${"881|Z4j5wFfZTiaSD1qiD4g5ELR2baSnmaVJE8vc9fLpde37836d"}',
+          'Bearer ${"888|goMsRx5T33pgbAloGxAvvsRgGLNYBj99QO6NEZGF70077ab9"}',
     };
   }
 

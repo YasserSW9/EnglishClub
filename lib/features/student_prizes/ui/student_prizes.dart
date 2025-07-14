@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:english_club/features/student_prizes/data/models/prizes_response.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_state.dart';
-import 'package:english_club/features/student_prizes/ui/widgets/prize_list_view.dart'; // Import the new widget
+import 'package:english_club/features/student_prizes/ui/widgets/prize_list_view.dart';
 
 class StudentPrizes extends StatefulWidget {
   const StudentPrizes({super.key});
@@ -26,28 +26,34 @@ class _StudentPrizesState extends State<StudentPrizes>
     _tabController = TabController(length: 2, vsync: this);
     _prizesCubit = context.read<PrizesCubit>();
 
-    // Initialize both scroll controllers
+    // ✅ تغيير: تهيئة ScrollControllers هنا
     _prizesCubit.initScrollControllers();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _prizesCubit.getUncollectedPrizes();
       _prizesCubit.getCollectedPrizes();
     });
 
-    _tabController.addListener(() {
+    _tabController.addListener(_handleTabSelection);
+  }
+
+  void _handleTabSelection() {
+    if (!mounted) return;
+    if (!_tabController.indexIsChanging) {
       if (_tabController.index == 0) {
-        // Uncollected tab selected
         _prizesCubit.getUncollectedPrizes();
       } else {
-        // Collected tab selected
         _prizesCubit.getCollectedPrizes();
       }
-    });
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
+    // ✅ تغيير: استدعاء دالة التخلص من الـ ScrollControllers من الـ Cubit
     _prizesCubit.disposeScrollControllers();
     super.dispose();
   }
@@ -74,20 +80,13 @@ class _StudentPrizesState extends State<StudentPrizes>
       ),
       body: BlocConsumer<PrizesCubit, PrizesState<PrizesResponse>>(
         listener: (context, state) {
+          if (!mounted) return;
           state.whenOrNull(
             error: (errorMsg) {
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(errorMsg)));
             },
-            // يمكنك إضافة استجابات لـ 'success' هنا إذا أردت عرض رسالة نجاح لعملية الجمع
-            // success: (prizesResponse) {
-            //   if (prizesResponse.message != null && prizesResponse.message!.isNotEmpty) {
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       SnackBar(content: Text(prizesResponse.message!)),
-            //     );
-            //   }
-            // },
           );
         },
         builder: (context, state) {
@@ -103,7 +102,6 @@ class _StudentPrizesState extends State<StudentPrizes>
                   ShimmerLoadingWidgets.buildShimmerListItem(),
             ),
             success: (prizesResponse) {
-              // Access data from the Cubit instance directly for each tab
               final uncollectedPrizes = _prizesCubit.uncollectedPrizes;
               final uncollectedIsLoadingMore =
                   _prizesCubit.uncollectedIsLoadingMore;
@@ -118,20 +116,16 @@ class _StudentPrizesState extends State<StudentPrizes>
               return TabBarView(
                 controller: _tabController,
                 children: [
-                  // Uncollected Prizes Tab
                   PrizeListView(
                     prizes: uncollectedPrizes,
                     tabController: _tabController,
-                    // تم إزالة onPrizeCollected: () => _prizesCubit.getUncollectedPrizes(isRefresh: true),
                     scrollController: _prizesCubit.uncollectedScrollController,
                     isLoadingMore: uncollectedIsLoadingMore,
                     hasMoreData: uncollectedHasMoreData,
                   ),
-                  // Collected Prizes Tab
                   PrizeListView(
                     prizes: collectedPrizes,
                     tabController: _tabController,
-                    // تم إزالة onPrizeCollected: () => _prizesCubit.getCollectedPrizes(isRefresh: true),
                     scrollController: _prizesCubit.collectedScrollController,
                     isLoadingMore: collectedIsLoadingMore,
                     hasMoreData: collectedHasMoreData,

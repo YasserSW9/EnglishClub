@@ -1,23 +1,22 @@
 // lib/profile_page/profile_page.dart
 import 'package:english_club/core/helpers/spacing.dart';
 import 'package:english_club/core/themeing/color_manager.dart';
-import 'package:english_club/features/admin_main_screen/data/models/admin_response.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/admin_cubit.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/admin_state.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/delete_admin_cubit.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/delete_admin_state.dart';
+import 'package:english_club/features/profile_page/data/model/admin_response.dart';
+import 'package:english_club/features/profile_page/logic/cubit/admin_cubit.dart';
+import 'package:english_club/features/profile_page/logic/cubit/admin_state.dart';
+import 'package:english_club/features/profile_page/logic/cubit/delete_admin_cubit.dart';
+import 'package:english_club/features/profile_page/logic/cubit/delete_admin_state.dart';
 
-// Import the new cubit and state for creating an admin (corrected path)
-import 'package:english_club/features/admin_main_screen/logic/cubit/create_admin_cubit.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/create_admin_state.dart';
+import 'package:english_club/features/profile_page/logic/cubit/create_admin_cubit.dart';
+import 'package:english_club/features/profile_page/logic/cubit/create_admin_state.dart';
 
-import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/add_admin_button.dart';
-import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/admin_list_item.dart';
+import 'package:english_club/features/profile_page/ui/widgets/add_admin_button.dart';
+import 'package:english_club/features/profile_page/ui/widgets/admin_list_item.dart';
+import 'package:english_club/features/profile_page/ui/widgets/shimmer_admin_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:english_club/features/admin_main_screen/ui/widgets/profile_page/shimmer_admin_list_item.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -27,23 +26,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // We will now use the TextEditingController from CreateAdminCubit
-  // final TextEditingController _newAdminNameController = TextEditingController();
-
-  // A nullable BuildContext to store the dialog's context
   BuildContext? _dialogContext;
 
   @override
   void initState() {
     super.initState();
-    // Fetch admins when the page initializes
     context.read<AdminCubit>().emitGetAdminData();
   }
 
   @override
   void dispose() {
-    // The controller is now managed by CreateAdminCubit, so we don't dispose it here.
-    // _newAdminNameController.dispose();
     super.dispose();
   }
 
@@ -55,7 +47,6 @@ class _ProfilePageState extends State<ProfilePage> {
       animType: AnimType.scale,
       title: 'Add new admin',
       body: Builder(
-        // Use a Builder to get a context specific to the dialog's content
         builder: (BuildContext innerContext) {
           _dialogContext = innerContext; // Capture the dialog's context
           return Padding(
@@ -111,9 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
       btnOkOnPress: () {
         final String newAdminName = createAdminCubit.nameController.text.trim();
         if (newAdminName.isNotEmpty) {
-          // Trigger the create admin operation using the cubit
           createAdminCubit.emitCreateAdminLoaded();
-          // DO NOT POP THE DIALOG HERE. It will be popped in the BlocListener.
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

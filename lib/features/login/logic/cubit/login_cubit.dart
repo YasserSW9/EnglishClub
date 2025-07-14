@@ -27,8 +27,6 @@ class LoginCubit extends Cubit<LoginState> {
         if (loginResponse.data?.token != null) {
           final String token = loginResponse.data!.token!;
           await CashNetwork.insertToCash(key: 'user_token', value: token);
-
-          DioFactory.setTokenIntoHeaderAfterLogin(token);
         }
         emit(LoginState.success(loginResponse));
       },

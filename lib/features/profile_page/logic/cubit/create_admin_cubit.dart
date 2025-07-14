@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:english_club/features/admin_main_screen/data/models/create_admin_request_body.dart';
-import 'package:english_club/features/admin_main_screen/data/repos/create_admin_repo.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/create_admin_state.dart';
+import 'package:english_club/features/profile_page/data/model/create_admin_request_body.dart';
+import 'package:english_club/features/profile_page/data/repos/create_admin_repo.dart';
+import 'package:english_club/features/profile_page/logic/cubit/create_admin_state.dart';
 import 'package:flutter/material.dart'; // Required for TextEditingController and GlobalKey
 
 class CreateAdminCubit extends Cubit<CreateAdminState> {

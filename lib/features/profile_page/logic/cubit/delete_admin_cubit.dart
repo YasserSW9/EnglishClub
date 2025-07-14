@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:english_club/features/admin_main_screen/data/models/delete_response.dart';
-import 'package:english_club/features/admin_main_screen/data/repos/delete_admin_repo.dart';
-import 'package:english_club/features/admin_main_screen/logic/cubit/delete_admin_state.dart'; // Ensure correct path for DeleteResponse
+import 'package:english_club/features/profile_page/data/model/delete_response.dart';
+import 'package:english_club/features/profile_page/data/repos/delete_admin_repo.dart';
+import 'package:english_club/features/profile_page/logic/cubit/delete_admin_state.dart'; // Ensure correct path for DeleteResponse
 
 class DeleteAdminCubit extends Cubit<DeleteAdminState> {
   final DeleteAdminRepo deleteAdminRepo; // Inject the DeleteAdminRepo
