@@ -26,7 +26,6 @@ class _StudentPrizesState extends State<StudentPrizes>
     _tabController = TabController(length: 2, vsync: this);
     _prizesCubit = context.read<PrizesCubit>();
 
-    // ✅ تغيير: تهيئة ScrollControllers هنا
     _prizesCubit.initScrollControllers();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -53,7 +52,6 @@ class _StudentPrizesState extends State<StudentPrizes>
   void dispose() {
     _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
-    // ✅ تغيير: استدعاء دالة التخلص من الـ ScrollControllers من الـ Cubit
     _prizesCubit.disposeScrollControllers();
     super.dispose();
   }

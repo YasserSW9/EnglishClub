@@ -6,4 +6,7 @@ class Routes {
   static const String todoTaks = '/todoTaks';
   static const String englishclub = '/englishclub';
   static const String addStudents = '/addStudents';
+  static const String addStudentsByExcel = '/addStudentsByExcel';
+  static const String addStudentsManually = '/addStudentsManually';
+  static const String ManageGradesAndClassess = '/ManageGradesAndClassess';
 }

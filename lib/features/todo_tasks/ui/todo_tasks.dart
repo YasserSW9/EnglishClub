@@ -24,6 +24,7 @@ class _TodoTasksState extends State<TodoTasks>
   late TabController _tabController;
   final ScrollController _waitingScrollController = ScrollController();
   final ScrollController _doneScrollController = ScrollController();
+  bool _isLoadingConfirmation = false;
 
   @override
   void initState() {
@@ -65,7 +66,17 @@ class _TodoTasksState extends State<TodoTasks>
       btnOkText: 'Confirm',
       btnCancelOnPress: () {},
       btnOkOnPress: () {
+        if (!mounted) {
+          debugPrint(
+            'Dialog button pressed, but TodoTasks is not mounted. Aborting.',
+          );
+          return;
+        }
+
         if (task.id != null) {
+          setState(() {
+            _isLoadingConfirmation = true;
+          });
           context.read<CollectTasksCubit>().emitMarkTaskAsDoneState(task.id!);
         } else {
           AwesomeDialog(
@@ -108,122 +119,165 @@ class _TodoTasksState extends State<TodoTasks>
           ],
         ),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<CollectTasksCubit, CollectTasksState<CollectTasks>>(
-            listener: (context, state) {
-              state.whenOrNull(
-                loading: () {},
-                success: (response) {
-                  AwesomeDialog(
-                    context: context,
-                    dialogType: DialogType.success,
-                    animType: AnimType.rightSlide,
-                    title: 'Success',
-                    desc:
-                        response.message ?? 'Task marked as done successfully!',
-                    btnOkOnPress: () {
-                      context.read<TasksCubit>().emitGetTasks();
-                      _tabController.animateTo(1);
+      body: Stack(
+        children: [
+          MultiBlocListener(
+            listeners: [
+              BlocListener<CollectTasksCubit, CollectTasksState<CollectTasks>>(
+                listener: (context, state) {
+                  state.whenOrNull(
+                    loading: () {},
+                    success: (response) {
+                      if (!mounted) {
+                        debugPrint(
+                          'CollectTasksCubit success, but TodoTasks is not mounted. Aborting dialog.',
+                        );
+                        return;
+                      }
+                      setState(() {
+                        _isLoadingConfirmation = false;
+                      });
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.success,
+                        animType: AnimType.rightSlide,
+                        title: 'Success',
+                        desc:
+                            response.message ??
+                            'Task marked as done successfully!',
+                        btnOkOnPress: () {
+                          if (!mounted) {
+                            debugPrint(
+                              'AwesomeDialog OK pressed, but TodoTasks is not mounted. Aborting operations.',
+                            );
+                            return;
+                          }
+                          context.read<TasksCubit>().emitGetTasks();
+                          _tabController.animateTo(1);
+                        },
+                      ).show();
                     },
-                  ).show();
+                    error: (error) {
+                      if (!mounted) {
+                        debugPrint(
+                          'CollectTasksCubit error, but TodoTasks is not mounted. Aborting dialog.',
+                        );
+                        return;
+                      }
+                      setState(() {
+                        _isLoadingConfirmation = false;
+                      });
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'Error',
+                        desc: error,
+                        btnOkOnPress: () {
+                          if (!mounted) {
+                            debugPrint(
+                              'AwesomeDialog ERROR OK pressed, but TodoTasks is not mounted. Aborting operations.',
+                            );
+                            return;
+                          }
+                        },
+                      ).show();
+                    },
+                  );
                 },
-                error: (error) {
-                  AwesomeDialog(
-                    context: context,
-                    dialogType: DialogType.error,
-                    animType: AnimType.rightSlide,
-                    title: 'Error',
-                    desc: error,
-                    btnOkOnPress: () {},
-                  ).show();
-                },
-              );
-            },
-          ),
-        ],
-        child: BlocBuilder<TasksCubit, TasksState>(
-          builder: (context, state) {
-            final tasksCubit = context.read<TasksCubit>();
+              ),
+            ],
+            child: BlocBuilder<TasksCubit, TasksState>(
+              builder: (context, state) {
+                final tasksCubit = context.read<TasksCubit>();
 
-            final bool isLoadingMore = state is LoadingMore;
-            final bool hasMoreData = tasksCubit.hasMoreData;
+                final bool isLoadingMore = state is LoadingMore;
+                final bool hasMoreData = tasksCubit.hasMoreData;
 
-            return state.when(
-              initial: () => const Center(child: Text('Initializing Tasks...')),
-              loading: () {
-                return ShimmerLoading(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: List.generate(
-                      2,
-                      (tabIndex) => ListView.builder(
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: 5,
-                        itemBuilder: (context, index) =>
-                            const TaskCardShimmer(),
+                return state.when(
+                  initial: () =>
+                      const Center(child: Text('Initializing Tasks...')),
+                  loading: () {
+                    return ShimmerLoading(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: List.generate(
+                          2,
+                          (tabIndex) => ListView.builder(
+                            padding: const EdgeInsets.all(8.0),
+                            itemCount: 5,
+                            itemBuilder: (context, index) =>
+                                const TaskCardShimmer(),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-              success: (doneTasks, waitingTasks) {
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    WaitingTaskList(
-                      tasks: waitingTasks,
-                      onMarkAsDone:
-                          _markTaskAsDone, // Pass the function to the Checkbox
-                      scrollController: _waitingScrollController,
-                      hasMoreData: hasMoreData,
-                      isLoadingMore: isLoadingMore,
-                    ),
-                    DoneTaskList(
-                      tasks: doneTasks,
-                      scrollController: _doneScrollController,
-                      hasMoreData: hasMoreData,
-                      isLoadingMore: isLoadingMore,
-                    ),
-                  ],
-                );
-              },
-              loadingMore: () {
-                List<DoneData> doneTasks = [];
-                List<Waiting> waitingTasks = [];
-
-                tasksCubit.state.maybeWhen(
-                  success: (_doneTasks, _waitingTasks) {
-                    doneTasks = _doneTasks;
-                    waitingTasks = _waitingTasks;
+                    );
                   },
-                  orElse: () {},
-                );
+                  success: (doneTasks, waitingTasks) {
+                    return TabBarView(
+                      controller: _tabController,
+                      children: [
+                        WaitingTaskList(
+                          tasks: waitingTasks,
+                          onMarkAsDone: _markTaskAsDone,
+                          scrollController: _waitingScrollController,
+                          hasMoreData: hasMoreData,
+                          isLoadingMore: isLoadingMore,
+                        ),
+                        DoneTaskList(
+                          tasks: doneTasks,
+                          scrollController: _doneScrollController,
+                          hasMoreData: hasMoreData,
+                          isLoadingMore: isLoadingMore,
+                        ),
+                      ],
+                    );
+                  },
+                  loadingMore: () {
+                    List<DoneData> doneTasks = [];
+                    List<Waiting> waitingTasks = [];
 
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    WaitingTaskList(
-                      tasks: waitingTasks,
-                      onMarkAsDone: _markTaskAsDone, // Pass the function
-                      scrollController: _waitingScrollController,
-                      hasMoreData: hasMoreData,
-                      isLoadingMore: isLoadingMore,
-                    ),
-                    DoneTaskList(
-                      tasks: doneTasks,
-                      scrollController: _doneScrollController,
-                      hasMoreData: hasMoreData,
-                      isLoadingMore: isLoadingMore,
-                    ),
-                  ],
+                    tasksCubit.state.maybeWhen(
+                      success: (_doneTasks, _waitingTasks) {
+                        doneTasks = _doneTasks;
+                        waitingTasks = _waitingTasks;
+                      },
+                      orElse: () {},
+                    );
+
+                    return TabBarView(
+                      controller: _tabController,
+                      children: [
+                        WaitingTaskList(
+                          tasks: waitingTasks,
+                          onMarkAsDone: _markTaskAsDone,
+                          scrollController: _waitingScrollController,
+                          hasMoreData: hasMoreData,
+                          isLoadingMore: isLoadingMore,
+                        ),
+                        DoneTaskList(
+                          tasks: doneTasks,
+                          scrollController: _doneScrollController,
+                          hasMoreData: hasMoreData,
+                          isLoadingMore: isLoadingMore,
+                        ),
+                      ],
+                    );
+                  },
+                  error: (error) =>
+                      Center(child: Text('An error occurred: $error')),
                 );
               },
-              error: (error) =>
-                  Center(child: Text('An error occurred: $error')),
-            );
-          },
-        ),
+            ),
+          ),
+          if (_isLoadingConfirmation)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+        ],
       ),
     );
   }

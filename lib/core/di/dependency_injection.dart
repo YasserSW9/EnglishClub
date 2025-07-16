@@ -27,38 +27,30 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => ApiService(dio));
   // login
   getIt.registerLazySingleton<LoginRepo>(() => LoginRepo(getIt()));
-  getIt.registerLazySingleton<LoginCubit>(() => LoginCubit(getIt()));
+  getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
   // admin notifications
   getIt.registerLazySingleton<NotificationsRepo>(
     () => NotificationsRepo(getIt()),
   );
-  getIt.registerLazySingleton<NotificationsCubit>(
-    () => NotificationsCubit(getIt()),
-  );
+  getIt.registerFactory<NotificationsCubit>(() => NotificationsCubit(getIt()));
   // admin view prizes
   getIt.registerLazySingleton<PrizesRepo>(() => PrizesRepo(getIt()));
-  getIt.registerLazySingleton<PrizesCubit>(() => PrizesCubit(getIt()));
+  getIt.registerFactory<PrizesCubit>(() => PrizesCubit(getIt()));
   // view all admins
   getIt.registerLazySingleton<AdminRepo>(() => AdminRepo(getIt()));
-  getIt.registerLazySingleton<AdminCubit>(() => AdminCubit(getIt()));
+  getIt.registerFactory<AdminCubit>(() => AdminCubit(getIt()));
   //Delete admin
   getIt.registerLazySingleton<DeleteAdminRepo>(() => DeleteAdminRepo(getIt()));
-  getIt.registerLazySingleton<DeleteAdminCubit>(
-    () => DeleteAdminCubit(getIt()),
-  );
+  getIt.registerFactory<DeleteAdminCubit>(() => DeleteAdminCubit(getIt()));
   // Create admin
   getIt.registerLazySingleton<CreateAdminRepo>(() => CreateAdminRepo(getIt()));
-  getIt.registerLazySingleton<CreateAdminCubit>(
-    () => CreateAdminCubit(getIt()),
-  );
+  getIt.registerFactory<CreateAdminCubit>(() => CreateAdminCubit(getIt()));
   // GET Tasks
   getIt.registerLazySingleton<TasksRepo>(() => TasksRepo(getIt()));
-  getIt.registerLazySingleton<TasksCubit>(() => TasksCubit(getIt()));
+  getIt.registerFactory<TasksCubit>(() => TasksCubit(getIt()));
   // Patch tasks
   getIt.registerLazySingleton<CollectTasksRepo>(
     () => CollectTasksRepo(getIt()),
   );
-  getIt.registerLazySingleton<CollectTasksCubit>(
-    () => CollectTasksCubit(getIt()),
-  );
+  getIt.registerFactory<CollectTasksCubit>(() => CollectTasksCubit(getIt()));
 }

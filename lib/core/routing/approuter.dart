@@ -1,5 +1,8 @@
 import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/routing/routes.dart';
+import 'package:english_club/features/add_students_by_excel/ui/add_students_by_excel.dart';
+import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
+import 'package:english_club/features/manage_grades_and_classes/ui/manage_grades_and_classes.dart';
 import 'package:english_club/features/profile_page/logic/cubit/admin_cubit.dart';
 import 'package:english_club/features/profile_page/logic/cubit/create_admin_cubit.dart';
 import 'package:english_club/features/profile_page/logic/cubit/delete_admin_cubit.dart';
@@ -69,6 +72,12 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => AddStudents());
       case Routes.englishclub:
         return MaterialPageRoute(builder: (_) => Englishclub());
+      case Routes.addStudentsByExcel:
+        return MaterialPageRoute(builder: (_) => AddStudentsByExcel());
+      case Routes.addStudentsManually:
+        return MaterialPageRoute(builder: (_) => AddStudentsManually());
+      case Routes.ManageGradesAndClassess:
+        return MaterialPageRoute(builder: (_) => ManageGradesAndClasses());
       default:
         return null;
     }
