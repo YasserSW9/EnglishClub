@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
 import 'package:english_club/features/profile_page/data/model/admin_response.dart';
 import 'package:english_club/features/profile_page/data/model/create_admin_request_body.dart';
 import 'package:english_club/features/profile_page/data/model/create_admin_response.dart';
@@ -33,26 +34,35 @@ abstract class ApiService {
     @Query('page') int page,
     @Query('collected') int? collectedStatus,
   );
+  //admin collect prizes
   @POST("/admin/students/{student_id}/collectedPrize/{prize_item_id}")
   Future<HttpResponse<dynamic>> collectPrize(
     @Path("student_id") int studentId,
     @Path("prize_item_id") int prizeItemId,
   );
+  // admin info
   @GET(ApiConstants.getAdminData)
   Future<List<AdminResponse>> getAdminData();
+  // delete admin
   @DELETE("admin/admins/{delete_admin_id}")
   Future<DeleteResponse> deleteAdmin(
     @Path("delete_admin_id") String deleteAdminId,
   );
+  // create admin
   @POST(ApiConstants.createAdmin)
   Future<CreateAdminResponse> createAdmin(
     @Body() CreateAdminRequestBody createAdminRequestBody,
   );
+  // admin taks
   @GET(ApiConstants.getTasks)
   Future<TasksResponse> getTasks(
     @Query("page") int page,
     @Query("per_page") int perPage,
   );
+  //collect admin tasks
   @PATCH("admin/todoNotifications/{task_id}/makeDone")
   Future<CollectTasks> getCollectTasks(@Path("task_id") int taskId);
+  // grades and classess info
+  @GET(ApiConstants.getGrades)
+  Future<GradesResponse> getGrades();
 }

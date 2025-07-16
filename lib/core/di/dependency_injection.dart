@@ -1,5 +1,7 @@
 import 'package:english_club/core/networking/api_service.dart';
 import 'package:english_club/core/networking/dio_factory.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/repos/grades_repo.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_cubit.dart';
 import 'package:english_club/features/profile_page/data/repos/admin_repo.dart';
 import 'package:english_club/features/profile_page/data/repos/create_admin_repo.dart';
 import 'package:english_club/features/profile_page/data/repos/delete_admin_repo.dart';
@@ -53,4 +55,7 @@ Future<void> setupGetIt() async {
     () => CollectTasksRepo(getIt()),
   );
   getIt.registerFactory<CollectTasksCubit>(() => CollectTasksCubit(getIt()));
+  // grades and classess
+  getIt.registerLazySingleton<GradesRepo>(() => GradesRepo(getIt()));
+  getIt.registerFactory<GradesCubit>(() => GradesCubit(getIt()));
 }
