@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_request_body.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
 import 'package:english_club/features/profile_page/data/model/admin_response.dart';
 import 'package:english_club/features/profile_page/data/model/create_admin_request_body.dart';
@@ -65,4 +67,10 @@ abstract class ApiService {
   // grades and classess info
   @GET(ApiConstants.getGrades)
   Future<GradesResponse> getGrades();
+  // create grades
+
+  @POST(ApiConstants.createGrades)
+  Future<CreateGradeResponse> createGrades(
+    @Body() CreateGradeRequestBody createGradesRequestBody,
+  );
 }

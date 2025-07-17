@@ -14,6 +14,7 @@ class ApiConstants {
   static const String collectTasks =
       "admin/todoNotifications/{task_id}/makeDone";
   static const String getGrades = "admin/grades";
+  static const String createGrades = "admin/grades";
 
   static List<String> wisdoms = [
     'Learning is a journey, not a destination. Embrace the process and be patient with yourself along the way.',

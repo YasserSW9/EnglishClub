@@ -2,6 +2,7 @@ import 'package:english_club/core/di/dependency_injection.dart';
 import 'package:english_club/core/routing/routes.dart';
 import 'package:english_club/features/add_students_by_excel/ui/add_students_by_excel.dart';
 import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/manage_grades_and_classes.dart';
 import 'package:english_club/features/profile_page/logic/cubit/admin_cubit.dart';
@@ -26,7 +27,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppRouter {
   Route? generateRoute(RouteSettings settings) {
-    //this arguments to be passed in any screen like this ( arguments as ClassName )
     // ignore: unused_local_variable
     final arguments = settings.arguments;
 
@@ -79,8 +79,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => AddStudentsManually());
       case Routes.ManageGradesAndClassess:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<GradesCubit>(),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<GradesCubit>()),
+              BlocProvider(create: (context) => getIt<CreateGradesCubit>()),
+            ],
             child: ManageGradesAndClasses(),
           ),
         );
