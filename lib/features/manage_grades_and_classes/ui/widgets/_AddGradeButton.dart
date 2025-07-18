@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-// ✅ ويدجت لزر "Add New Grade +"
 class AddGradeButton extends StatelessWidget {
-  final VoidCallback onCreateGrade; // دالة يتم استدعاؤها عند الضغط على الزر
+  final VoidCallback onCreateGrade;
 
   const AddGradeButton({required this.onCreateGrade, super.key});
 
@@ -10,7 +9,7 @@ class AddGradeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ElevatedButton(
-        onPressed: onCreateGrade, // استدعاء الدالة الممررة
+        onPressed: onCreateGrade,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.deepPurple,
           shape: const StadiumBorder(),

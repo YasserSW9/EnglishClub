@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:english_club/core/helpers/extensions.dart'; // لتسهيل استخدام context.pop()
+import 'package:english_club/core/helpers/extensions.dart';
 
-// ✅ ويدجت بسيطة لـ AppBar
 class ManageGradesAndClassesAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   const ManageGradesAndClassesAppBar({super.key});
@@ -22,5 +21,5 @@ class ManageGradesAndClassesAppBar extends StatelessWidget
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight); // لتحديد حجم AppBar
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

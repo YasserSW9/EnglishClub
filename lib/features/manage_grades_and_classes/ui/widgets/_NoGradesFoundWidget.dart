@@ -2,7 +2,7 @@ import 'package:english_club/features/manage_grades_and_classes/ui/widgets/_AddG
 import 'package:flutter/material.dart';
 
 class NoGradesFoundWidget extends StatelessWidget {
-  final VoidCallback onCreateGrade; // دالة استدعاء زر الإضافة
+  final VoidCallback onCreateGrade;
 
   const NoGradesFoundWidget({required this.onCreateGrade, super.key});
 
@@ -13,9 +13,7 @@ class NoGradesFoundWidget extends StatelessWidget {
       children: [
         const Center(child: Text('No grades found. Click below to add one.')),
         const SizedBox(height: 20),
-        AddGradeButton(
-          onCreateGrade: onCreateGrade, // تمرير نفس الدالة لزر الإضافة
-        ),
+        AddGradeButton(onCreateGrade: onCreateGrade),
       ],
     );
   }

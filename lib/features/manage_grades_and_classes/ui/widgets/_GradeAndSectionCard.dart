@@ -1,22 +1,19 @@
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart'; // لاستخدام Data و Classes models
+import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// ✅ ويدجت لبطاقة الصف والأقسام
 class GradeAndSectionCard extends StatelessWidget {
-  final Data grade; // بيانات الصف
-  final TextEditingController
-  textController; // كنترولر للتعديل (يتم تمريره من الأب)
-  final Function(Data) onGradeDeleted; // callback للحذف
-  final Function(Classes, int)
-  onSectionDeleted; // callback لحذف القسم (يحتاج ID الصف)
-  final Function(Data, String) onGradeNameEdited; // callback لتعديل اسم الصف
-  final Function(Classes, String, int)
-  onSectionNameEdited; // callback لتعديل اسم القسم (يحتاج ID القسم و ID الصف)
+  final Data grade;
+  final Function(Data) onGradeDeleted;
+  final Function(Classes, int) onSectionDeleted;
+
+  final Function(Data gradeToEdit, String newName) onGradeNameEdited;
+  final Function(Classes, String, int) onSectionNameEdited;
 
   const GradeAndSectionCard({
     required this.grade,
-    required this.textController,
     required this.onGradeDeleted,
     required this.onSectionDeleted,
     required this.onGradeNameEdited,
@@ -26,8 +23,7 @@ class GradeAndSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ حماية إضافية: تأكد أن grade ليس null
-    if (grade == null) return const SizedBox.shrink(); // لا تعرض إذا كان null
+    if (grade == null) return const SizedBox.shrink();
 
     final List<Classes> sections = grade.classes ?? [];
 
@@ -52,10 +48,10 @@ class GradeAndSectionCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // زر تعديل اسم الصف
                 GestureDetector(
                   onTap: () {
-                    textController.text = grade.name ?? '';
+                    context.read<EditGradeCubit>().nameController.text =
+                        grade.name ?? '';
                     AwesomeDialog(
                       context: context,
                       dialogType: DialogType.info,
@@ -64,7 +60,9 @@ class GradeAndSectionCard extends StatelessWidget {
                       body: Padding(
                         padding: const EdgeInsets.all(16),
                         child: TextField(
-                          controller: textController,
+                          controller: context
+                              .read<EditGradeCubit>()
+                              .nameController,
                           decoration: InputDecoration(
                             labelText: 'Grade Name',
                             hintText: 'New name for "${grade.name ?? ''}"',
@@ -77,17 +75,22 @@ class GradeAndSectionCard extends StatelessWidget {
                       btnOkText: 'Save',
                       btnCancelText: 'Cancel',
                       btnOkOnPress: () {
-                        final String newName = textController.text.trim();
+                        final String newName = context
+                            .read<EditGradeCubit>()
+                            .nameController
+                            .text
+                            .trim();
                         if (newName.isEmpty) return;
-                        onGradeNameEdited(grade, newName); // استدعاء callback
-                        textController.clear();
+                        onGradeNameEdited(grade, newName);
+                        context.read<EditGradeCubit>().nameController.clear();
                       },
-                      btnCancelOnPress: () => textController.clear(),
+                      btnCancelOnPress: () =>
+                          context.read<EditGradeCubit>().nameController.clear(),
                     ).show();
                   },
                   child: const Icon(Icons.edit, color: Colors.blue, size: 20),
                 ),
-                // عرض اسم الصف
+
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -98,7 +101,7 @@ class GradeAndSectionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Text(
-                    grade.name ?? '', // ✅ استخدام ?? '' للحماية
+                    grade.name ?? '',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.deepPurple,
@@ -113,17 +116,17 @@ class GradeAndSectionCard extends StatelessWidget {
                       dialogType: DialogType.error,
                       title: 'Delete Grade',
                       desc:
-                          'Are you sure you want to delete "${grade.name ?? ''}"? This action cannot be undone.', // ✅ استخدام ?? '' للحماية
+                          'Are you sure you want to delete "${grade.name ?? ''}"? This action cannot be undone.',
                       btnOkText: 'Delete',
                       btnCancelText: 'Cancel',
                       btnOkOnPress: () {
-                        onGradeDeleted(grade); // استدعاء callback
+                        onGradeDeleted(grade);
                         AwesomeDialog(
                           context: context,
                           dialogType: DialogType.success,
                           title: 'Deleted!',
                           desc:
-                              '"${grade.name ?? ''}" has been successfully removed.', // ✅ استخدام ?? '' للحماية
+                              '"${grade.name ?? ''}" has been successfully removed.',
                           btnOkOnPress: () {},
                         ).show();
                       },
@@ -134,7 +137,7 @@ class GradeAndSectionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // عرض الأقسام (إن وجدت)
+
             if (sections.isNotEmpty)
               for (
                 int sectionIndex = 0;
@@ -144,7 +147,7 @@ class GradeAndSectionCard extends StatelessWidget {
                 Dismissible(
                   key: ValueKey(
                     '${grade.id ?? 0}_${sections[sectionIndex].id ?? sectionIndex}',
-                  ), // ✅ استخدام ?? 0 للحماية
+                  ),
                   direction: DismissDirection.horizontal,
                   background: Container(
                     color: Colors.red,
@@ -165,27 +168,29 @@ class GradeAndSectionCard extends StatelessWidget {
                         dialogType: DialogType.error,
                         title: 'Delete Section',
                         desc:
-                            'Are you sure you want to delete "${sections[sectionIndex].name ?? ''}"? This cannot be undone.', // ✅ استخدام ?? '' للحماية
+                            'Are you sure you want to delete "${sections[sectionIndex].name ?? ''}"? This cannot be undone.',
                         btnOkText: 'Delete',
                         btnCancelText: 'Cancel',
                         btnOkOnPress: () {
                           onSectionDeleted(
                             sections[sectionIndex],
                             grade.id ?? 0,
-                          ); // استدعاء callback
+                          );
                           AwesomeDialog(
                             context: context,
                             dialogType: DialogType.success,
                             title: 'Deleted!',
                             desc:
-                                '"${sections[sectionIndex].name ?? ''}" has been removed.', // ✅ استخدام ?? '' للحماية
+                                '"${sections[sectionIndex].name ?? ''}" has been removed.',
                             btnOkOnPress: () {},
                           ).show();
                         },
                       ).show();
                       return false;
                     } else if (direction == DismissDirection.endToStart) {
-                      textController.text = sections[sectionIndex].name ?? '';
+                      context.read<EditGradeCubit>().nameController.text =
+                          sections[sectionIndex].name ?? '';
+
                       AwesomeDialog(
                         context: context,
                         dialogType: DialogType.info,
@@ -194,11 +199,13 @@ class GradeAndSectionCard extends StatelessWidget {
                         body: Padding(
                           padding: const EdgeInsets.all(16),
                           child: TextField(
-                            controller: textController,
+                            controller: context
+                                .read<EditGradeCubit>()
+                                .nameController,
                             decoration: InputDecoration(
                               labelText: 'Section Name',
                               hintText:
-                                  'New name for "${sections[sectionIndex].name ?? ''}"', // ✅ استخدام ?? '' للحماية
+                                  'New name for "${sections[sectionIndex].name ?? ''}"',
                               border: const OutlineInputBorder(),
                               filled: true,
                               fillColor: Colors.grey[100],
@@ -208,17 +215,23 @@ class GradeAndSectionCard extends StatelessWidget {
                         btnOkText: 'Save',
                         btnCancelText: 'Cancel',
                         btnOkOnPress: () {
-                          final String newSectionName = textController.text
+                          final String newSectionName = context
+                              .read<EditGradeCubit>()
+                              .nameController
+                              .text
                               .trim();
                           if (newSectionName.isEmpty) return;
                           onSectionNameEdited(
                             sections[sectionIndex],
                             newSectionName,
                             grade.id ?? 0,
-                          ); // استدعاء callback
-                          textController.clear();
+                          );
+                          context.read<EditGradeCubit>().nameController.clear();
                         },
-                        btnCancelOnPress: () => textController.clear(),
+                        btnCancelOnPress: () => context
+                            .read<EditGradeCubit>()
+                            .nameController
+                            .clear(),
                       ).show();
                       return false;
                     }
@@ -243,8 +256,7 @@ class GradeAndSectionCard extends StatelessWidget {
                       ],
                     ),
                     child: Text(
-                      sections[sectionIndex].name ??
-                          '', // ✅ استخدام ?? '' للحماية
+                      sections[sectionIndex].name ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black87,

@@ -3,6 +3,7 @@ import 'package:english_club/core/routing/routes.dart';
 import 'package:english_club/features/add_students_by_excel/ui/add_students_by_excel.dart';
 import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/manage_grades_and_classes.dart';
 import 'package:english_club/features/profile_page/logic/cubit/admin_cubit.dart';
@@ -15,7 +16,7 @@ import 'package:english_club/features/login/logic/cubit/login_cubit.dart'
     show LoginCubit;
 import 'package:english_club/features/login/ui/login_Screen.dart';
 
-import 'package:english_club/features/onbording/onboarding.dart';
+import 'package:english_club/features/onbording/ui/onboarding.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:english_club/features/student_prizes/ui/student_prizes.dart';
 import 'package:english_club/features/add_students/ui/add_students.dart';
@@ -82,6 +83,7 @@ class AppRouter {
           builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider(create: (context) => getIt<GradesCubit>()),
+              BlocProvider(create: (context) => getIt<EditGradeCubit>()),
               BlocProvider(create: (context) => getIt<CreateGradesCubit>()),
             ],
             child: ManageGradesAndClasses(),

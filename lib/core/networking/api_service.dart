@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_request_body.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_response.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/edit_grade_request_body.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/edit_grade_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
 import 'package:english_club/features/profile_page/data/model/admin_response.dart';
 import 'package:english_club/features/profile_page/data/model/create_admin_request_body.dart';
@@ -72,5 +74,11 @@ abstract class ApiService {
   @POST(ApiConstants.createGrades)
   Future<CreateGradeResponse> createGrades(
     @Body() CreateGradeRequestBody createGradesRequestBody,
+  );
+  // edit grades
+  @PUT('admin/grades/{edit_grade_id}')
+  Future<EditGradeResponse> editGrade(
+    @Path("edit_grade_id") int editGradeIt,
+    @Body() EditGradeRequestBody editGradeRequestBody,
   );
 }

@@ -1,7 +1,9 @@
 import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_state.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_state.dart';
-import 'package:english_club/features/manage_grades_and_classes/ui/ManageGradesAndClassesAppBar.dart';
+import 'package:english_club/features/manage_grades_and_classes/ui/widgets/ManageGradesAndClassesAppBar.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/widgets/grades_shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -21,19 +23,17 @@ class ManageGradesAndClasses extends StatefulWidget {
 }
 
 class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
-  final TextEditingController _textController = TextEditingController();
-
   List<Data> _gradesFromApi = [];
 
   @override
   void initState() {
     super.initState();
+
     context.read<GradesCubit>().emitGetGrades();
   }
 
   @override
   void dispose() {
-    _textController.dispose();
     super.dispose();
   }
 
@@ -69,6 +69,7 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
               );
             },
           ),
+
           BlocListener<CreateGradesCubit, CreateGradesState>(
             listener: (context, state) {
               state.whenOrNull(
@@ -104,6 +105,48 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                     desc:
                         error ??
                         'An unknown error occurred during grade creation.',
+                    btnOkOnPress: () {},
+                  ).show();
+                },
+              );
+            },
+          ),
+
+          BlocListener<EditGradeCubit, EditGradeState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                loading: () {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.info,
+                    animType: AnimType.bottomSlide,
+                    title: 'Updating Grade',
+                    desc: 'Please wait...',
+                    autoHide: const Duration(seconds: 5),
+                    headerAnimationLoop: true,
+                  ).show();
+                },
+                success: (data) {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.success,
+                    animType: AnimType.bottomSlide,
+                    title: 'Success!',
+                    desc: 'Grade updated successfully.',
+                    btnOkOnPress: () {
+                      context.read<GradesCubit>().emitGetGrades();
+                    },
+                  ).show();
+                },
+                error: (error) {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.error,
+                    animType: AnimType.bottomSlide,
+                    title: 'Error',
+                    desc:
+                        error ??
+                        'An unknown error occurred during grade update.',
                     btnOkOnPress: () {},
                   ).show();
                 },
@@ -177,6 +220,7 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                         },
                       ),
                       const SizedBox(height: 20),
+
                       for (
                         int gradeIndex = 0;
                         gradeIndex < _gradesFromApi.length;
@@ -184,8 +228,6 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                       )
                         GradeAndSectionCard(
                           grade: _gradesFromApi[gradeIndex],
-                          textController:
-                              _textController, // تمرير الكنترولر للتعديل
                           onGradeDeleted: (gradeToDelete) {
                             setState(() {
                               _gradesFromApi.removeWhere(
@@ -203,13 +245,14 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                               );
                             });
                           },
+
                           onGradeNameEdited: (gradeToEdit, newName) {
-                            setState(() {
-                              final gradeToUpdate = _gradesFromApi.firstWhere(
-                                (g) => g.id == gradeToEdit.id,
-                              );
-                              gradeToUpdate.name = newName;
-                            });
+                            context.read<EditGradeCubit>().nameController.text =
+                                newName;
+
+                            context.read<EditGradeCubit>().emitEditGradeLoaded(
+                              gradeId: gradeToEdit.id!,
+                            );
                           },
                           onSectionNameEdited:
                               (sectionToEdit, newName, gradeId) {
