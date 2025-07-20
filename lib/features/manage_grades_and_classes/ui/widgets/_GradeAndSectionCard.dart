@@ -1,3 +1,4 @@
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_cubit.dart'; // إضافة هذا السطر
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -6,15 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GradeAndSectionCard extends StatelessWidget {
   final Data grade;
-  final Function(Data) onGradeDeleted;
-  final Function(Classes, int) onSectionDeleted;
 
+  final Function(Classes, int)
+  onSectionDeleted; // تبقى هذه لأنها لا تزال معالجة محلية
   final Function(Data gradeToEdit, String newName) onGradeNameEdited;
   final Function(Classes, String, int) onSectionNameEdited;
 
   const GradeAndSectionCard({
     required this.grade,
-    required this.onGradeDeleted,
+
     required this.onSectionDeleted,
     required this.onGradeNameEdited,
     required this.onSectionNameEdited,
@@ -120,15 +121,12 @@ class GradeAndSectionCard extends StatelessWidget {
                       btnOkText: 'Delete',
                       btnCancelText: 'Cancel',
                       btnOkOnPress: () {
-                        onGradeDeleted(grade);
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.success,
-                          title: 'Deleted!',
-                          desc:
-                              '"${grade.name ?? ''}" has been successfully removed.',
-                          btnOkOnPress: () {},
-                        ).show();
+                        // 🚀 استدعاء DeleteGradeCubit لحذف الصف عبر API
+                        context.read<DeleteGradeCubit>().emitDeleteGrade(
+                          gradeId: grade.id
+                              .toString(), // تحويل الـ ID إلى String
+                        );
+                        // لا حاجة لـ setState أو AwesomeDialog للنجاح هنا، سيتم التعامل معها في BlocListener الرئيسي
                       },
                     ).show();
                   },

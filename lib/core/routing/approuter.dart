@@ -3,6 +3,7 @@ import 'package:english_club/core/routing/routes.dart';
 import 'package:english_club/features/add_students_by_excel/ui/add_students_by_excel.dart';
 import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/manage_grades_and_classes.dart';
@@ -83,6 +84,7 @@ class AppRouter {
           builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider(create: (context) => getIt<GradesCubit>()),
+              BlocProvider(create: (context) => getIt<DeleteGradeCubit>()),
               BlocProvider(create: (context) => getIt<EditGradeCubit>()),
               BlocProvider(create: (context) => getIt<CreateGradesCubit>()),
             ],

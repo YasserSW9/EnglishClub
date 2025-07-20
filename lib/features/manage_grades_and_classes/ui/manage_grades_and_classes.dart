@@ -14,6 +14,8 @@ import 'package:english_club/features/manage_grades_and_classes/logic/cubit/crea
 import 'package:english_club/features/manage_grades_and_classes/ui/widgets/_AddGradeButton.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/widgets/_GradeAndSectionCard.dart';
 import 'package:english_club/features/manage_grades_and_classes/ui/widgets/_NoGradesFoundWidget.dart';
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_cubit.dart'; // إضافة هذا السطر
+import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_state.dart'; // إضافة هذا السطر
 
 class ManageGradesAndClasses extends StatefulWidget {
   const ManageGradesAndClasses({super.key});
@@ -153,6 +155,50 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
               );
             },
           ),
+
+          // 🚀 BlocListener الجديد لـ DeleteGradeCubit
+          BlocListener<DeleteGradeCubit, DeleteGradeState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                loading: () {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.info,
+                    animType: AnimType.bottomSlide,
+                    title: 'Deleting Grade',
+                    desc: 'Please wait...',
+                    autoHide: const Duration(seconds: 5),
+                    headerAnimationLoop: true,
+                  ).show();
+                },
+                success: (data) {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.success,
+                    animType: AnimType.bottomSlide,
+                    title: 'Success!',
+                    desc: 'Grade deleted successfully.',
+                    btnOkOnPress: () {
+                      // بعد الحذف بنجاح، أعد جلب قائمة الصفوف المحدثة
+                      context.read<GradesCubit>().emitGetGrades();
+                    },
+                  ).show();
+                },
+                error: (error) {
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.error,
+                    animType: AnimType.bottomSlide,
+                    title: 'Error',
+                    desc:
+                        error ??
+                        'An unknown error occurred during grade deletion.',
+                    btnOkOnPress: () {},
+                  ).show();
+                },
+              );
+            },
+          ),
         ],
         child: BlocBuilder<GradesCubit, GradesState>(
           builder: (context, state) {
@@ -228,13 +274,14 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                       )
                         GradeAndSectionCard(
                           grade: _gradesFromApi[gradeIndex],
-                          onGradeDeleted: (gradeToDelete) {
-                            setState(() {
-                              _gradesFromApi.removeWhere(
-                                (g) => g.id == gradeToDelete.id,
-                              );
-                            });
-                          },
+                          // 🗑️ تم إزالة onGradeDeleted حيث أن الـ Cubit سيتولى الحذف
+                          // onGradeDeleted: (gradeToDelete) {
+                          //   setState(() {
+                          //     _gradesFromApi.removeWhere(
+                          //       (g) => g.id == gradeToDelete.id,
+                          //     );
+                          //   });
+                          // },
                           onSectionDeleted: (sectionToDelete, gradeId) {
                             setState(() {
                               final gradeToUpdate = _gradesFromApi.firstWhere(

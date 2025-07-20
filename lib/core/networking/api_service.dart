@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_request_body.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_response.dart';
+import 'package:english_club/features/manage_grades_and_classes/data/models/delete_grade_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/edit_grade_request_body.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/edit_grade_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/grades_response.dart';
@@ -80,5 +81,10 @@ abstract class ApiService {
   Future<EditGradeResponse> editGrade(
     @Path("edit_grade_id") int editGradeIt,
     @Body() EditGradeRequestBody editGradeRequestBody,
+  );
+  // delete grades
+  @DELETE("admin/grades/{delete_grade_id}")
+  Future<DeleteGradeResponse> deleteGrade(
+    @Path("delete_grade_id") String deleteGradeId,
   );
 }
