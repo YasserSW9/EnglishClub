@@ -1,7 +1,11 @@
-// add_students_manually.dart
+// lib/features/add_students_manually/ui/screens/add_students_manually.dart
+import 'package:english_club/features/add_students_manually/logic/create_student_cubit.dart';
+import 'package:english_club/features/add_students_manually/logic/create_student_state.dart';
 import 'package:english_club/features/add_students_manually/ui/widgets/custom_dropdown_field.dart';
 import 'package:english_club/features/add_students_manually/ui/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddStudentsManually extends StatefulWidget {
   const AddStudentsManually({super.key});
@@ -13,15 +17,8 @@ class AddStudentsManually extends StatefulWidget {
 class _AddStudentsManuallyState extends State<AddStudentsManually> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _studentNameController = TextEditingController();
-  final TextEditingController _studentScoreController = TextEditingController();
-  final TextEditingController _borrowLimitController = TextEditingController();
-  final TextEditingController _bronzeCoinsController = TextEditingController();
-  final TextEditingController _silverCoinsController = TextEditingController();
-  final TextEditingController _goldenCoinsController = TextEditingController();
-
-  String? _selectedClassType = 'temp1';
-  String? _selectedGradeType = 'Temporary';
+  String? _selectedClassType;
+  String? _selectedGradeType;
   String? _selectedOxfordDominoes;
   String? _selectedOxfordReadDiscover;
   String? _selectedNationalGeographic;
@@ -62,128 +59,50 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
   ];
   final List<String> _listeningSkillOptions = [
     'Begginers/L.S',
-    'Elementary/L.S'
-        'Intermediate/L.S',
+    'Elementary/L.S',
+    'Intermediate/L.S',
     'Upper Intermediate/L.S',
     'Advanced/L.S',
   ];
 
-  String? _studentNameError;
-  String? _studentScoreError;
-  String? _borrowLimitError;
-  String? _bronzeCoinsError;
-  String? _silverCoinsError;
-  String? _goldenCoinsError;
-  String? _classTypeError;
-  String? _gradeTypeError;
-  String? _oxfordDominoesError;
-  String? _oxfordReadDiscoverError;
-  String? _nationalGeographicError;
-  String? _listeningSkillError;
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedClassType = 'temp1';
+    _selectedGradeType = 'Temporary';
+    // تهيئة gClassIdController بالقيمة الافتراضية عند بدء التشغيل
+    context.read<CreateStudentCubit>().gClassIdController.text =
+        _getGradeId(_selectedGradeType)?.toString() ?? '';
+  }
 
   @override
   void dispose() {
-    _studentNameController.dispose();
-    _studentScoreController.dispose();
-    _borrowLimitController.dispose();
-    _bronzeCoinsController.dispose();
-    _silverCoinsController.dispose();
-    _goldenCoinsController.dispose();
     super.dispose();
   }
 
-  bool _validateForm() {
-    setState(() {
-      _studentNameError = null;
-      _studentScoreError = null;
-      _borrowLimitError = null;
-      _bronzeCoinsError = null;
-      _silverCoinsError = null;
-      _goldenCoinsError = null;
-      _classTypeError = null;
-      _gradeTypeError = null;
-      _oxfordDominoesError = null;
-      _oxfordReadDiscoverError = null;
-      _nationalGeographicError = null;
-      _listeningSkillError = null;
-    });
-
-    bool isValid = true;
-
-    // قواعد التحقق من صحة حقول إدخال النص
-    if (_studentNameController.text.isEmpty) {
-      _studentNameError = 'Please enter student name';
-      isValid = false;
+  // دالة مساعدة لتحويل اسم الدرجة إلى ID رقمي بناءً على استجابة الـ API
+  int? _getGradeId(String? gradeName) {
+    switch (gradeName) {
+      case 'Temporary':
+        return 1; // ID 1 من الـ API
+      case 'Grade 7':
+        return 2; // ID 2 من الـ API
+      case 'Grade 8':
+        return 3; // ID 3 من الـ API
+      case 'Grade 9':
+        return 4; // ID 4 من الـ API
+      case 'Grade 10':
+        return 5; // ID 5 من الـ API
+      default:
+        return null;
     }
-    if (_studentScoreController.text.isEmpty) {
-      _studentScoreError = 'Please enter student score';
-      isValid = false;
-    } else if (int.tryParse(_studentScoreController.text) == null) {
-      _studentScoreError = 'Please enter a valid number';
-      isValid = false;
-    }
-    if (_borrowLimitController.text.isEmpty) {
-      _borrowLimitError = 'Please enter borrow limit';
-      isValid = false;
-    } else if (int.tryParse(_borrowLimitController.text) == null) {
-      _borrowLimitError = 'Please enter a valid number';
-      isValid = false;
-    }
-    if (_bronzeCoinsController.text.isEmpty) {
-      _bronzeCoinsError = 'Please enter bronze coins';
-      isValid = false;
-    } else if (int.tryParse(_bronzeCoinsController.text) == null) {
-      _bronzeCoinsError = 'Please enter a valid number';
-      isValid = false;
-    }
-    if (_silverCoinsController.text.isEmpty) {
-      _silverCoinsError = 'Please enter silver coins';
-      isValid = false;
-    } else if (int.tryParse(_silverCoinsController.text) == null) {
-      _silverCoinsError = 'Please enter a valid number';
-      isValid = false;
-    }
-    if (_goldenCoinsController.text.isEmpty) {
-      _goldenCoinsError = 'Please enter golden coins';
-      isValid = false;
-    } else if (int.tryParse(_goldenCoinsController.text) == null) {
-      _goldenCoinsError = 'Please enter a valid number';
-      isValid = false;
-    }
-
-    if (_selectedClassType == null) {
-      _classTypeError = 'Please select a class type';
-      isValid = false;
-    }
-    if (_selectedGradeType == null) {
-      _gradeTypeError = 'Please select a grade type';
-      isValid = false;
-    }
-    if (_selectedOxfordDominoes == null) {
-      _oxfordDominoesError = 'Please select an option for Oxford Dominoes';
-      isValid = false;
-    }
-    if (_selectedOxfordReadDiscover == null) {
-      _oxfordReadDiscoverError =
-          'Please select an option for Oxford Read & Discover';
-      isValid = false;
-    }
-    if (_selectedNationalGeographic == null) {
-      _nationalGeographicError =
-          'Please select an option for National Geographic';
-      isValid = false;
-    }
-    if (_selectedListeningSkill == null) {
-      _listeningSkillError = 'Please select an option for Listening Skill';
-      isValid = false;
-    }
-
-    setState(() {});
-    return isValid;
   }
 
   @override
   Widget build(BuildContext context) {
+    final createStudentCubit = context.read<CreateStudentCubit>();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -199,171 +118,194 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
         backgroundColor: const Color(0xFF673AB7),
       ),
       body: Container(
-        margin: EdgeInsets.only(top: 20),
-        padding: EdgeInsets.all(25),
+        margin: const EdgeInsets.only(top: 20),
+        padding: const EdgeInsets.all(25),
         color: Colors.white,
+        child: BlocListener<CreateStudentCubit, CreateStudentState>(
+          listener: (context, state) {
+            state.whenOrNull(
+              loading: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Creating account...')),
+                );
+              },
+              success: (data) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              CustomInputField(
-                controller: _studentNameController,
-                labelText: 'Student name',
-                hintText: 'Student name',
-                errorText: _studentNameError,
-              ),
-              const SizedBox(height: 15.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomDropdownField(
-                      value: _selectedClassType,
-                      hintText: "Class",
-                      items: _classTypes,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedClassType = newValue;
-                          _classTypeError = null;
-                        });
-                      },
-                      errorText: _classTypeError,
+                // الوصول الصحيح للبيانات هو data.data?.account
+                final username =
+                    data.data?.account?.username ?? 'Not available';
+                final password =
+                    data.data?.account?.password ?? 'Not available';
+
+                AwesomeDialog(
+                  context: context,
+                  dialogType: DialogType.success,
+                  animType: AnimType.rightSlide,
+                  title: 'Account Created Successfully! 🎉',
+                  desc: 'Username: $username\nPassword: $password',
+                  btnOkOnPress: () {
+                    // يمكنك إضافة أي منطق هنا عند إغلاق الـ dialog
+                  },
+                ).show();
+              },
+              error: (error) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $error 😞')));
+              },
+            );
+          },
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                CustomInputField(
+                  controller: createStudentCubit.nameController,
+                  labelText: 'Student name',
+                  hintText: 'Student name',
+                ),
+                const SizedBox(height: 15.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomDropdownField(
+                        value: _selectedClassType,
+                        hintText: "Class",
+                        items: _classTypes,
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedClassType = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: CustomDropdownField(
+                        value: _selectedGradeType,
+                        hintText: "Grade",
+                        items: _gradeTypes,
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedGradeType = newValue;
+                            // تحديث gClassIdController هنا عند تغيير الدرجة
+                            createStudentCubit.gClassIdController.text =
+                                _getGradeId(newValue)?.toString() ?? '';
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                CustomInputField(
+                  controller: createStudentCubit.scoreController,
+                  labelText: 'Student score',
+                  hintText: 'Student score',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16.0),
+                CustomInputField(
+                  controller: createStudentCubit.borrowLimitController,
+                  labelText: 'Borrow limit',
+                  hintText: 'Borrow limit',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16.0),
+                CustomInputField(
+                  controller: createStudentCubit.bronzeCoinsController,
+                  labelText: 'Bronze coins',
+                  hintText: 'Bronze coins',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16.0),
+                CustomInputField(
+                  controller: createStudentCubit.silverCoinsController,
+                  labelText: 'Silver coins',
+                  hintText: 'Silver coins',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16.0),
+                CustomInputField(
+                  controller: createStudentCubit.goldenCoinsController,
+                  labelText: 'Golden coins',
+                  hintText: 'Golden coins',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 24.0),
+
+                CustomDropdownField(
+                  value: _selectedOxfordDominoes,
+                  hintText: 'OXFORD DOMINOES & BOOKWORMS Quick Starter Part',
+                  items: _oxfordDominoesOptions,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedOxfordDominoes = newValue;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                CustomDropdownField(
+                  value: _selectedOxfordReadDiscover,
+                  hintText: 'OXFORD READ & DISCOVER 1-6 Level 1/R&D',
+                  items: _oxfordReadDiscoverOptions,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedOxfordReadDiscover = newValue;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                CustomDropdownField(
+                  value: _selectedNationalGeographic,
+                  hintText: 'NATIONAL GEOGRAPHIC A2 Part 1/N.G',
+                  items: _nationalGeographicOptions,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedNationalGeographic = newValue;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                CustomDropdownField(
+                  value: _selectedListeningSkill,
+                  hintText: 'LISTENING SKILL Begginers/L.S',
+                  items: _listeningSkillOptions,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedListeningSkill = newValue;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24.0),
+
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // تأكيد أن gClassIdController لديه قيمة بناءً على الاختيار الحالي
+                      createStudentCubit.gClassIdController.text =
+                          _getGradeId(_selectedGradeType)?.toString() ?? '';
+
+                      createStudentCubit.emitCreateStudentLoaded();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF673AB7),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: CustomDropdownField(
-                      value: _selectedGradeType,
-                      hintText: "Grade",
-                      items: _gradeTypes,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedGradeType = newValue;
-                          _gradeTypeError = null; //
-                        });
-                      },
-                      errorText: _gradeTypeError,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              CustomInputField(
-                controller: _studentScoreController,
-                labelText: 'Student score',
-                hintText: 'Student score',
-                keyboardType: TextInputType.number,
-                errorText: _studentScoreError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomInputField(
-                controller: _borrowLimitController,
-                labelText: 'Borrow limit',
-                hintText: 'Borrow limit',
-                keyboardType: TextInputType.number,
-                errorText: _borrowLimitError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomInputField(
-                controller: _bronzeCoinsController,
-                labelText: 'Bronze coins',
-                hintText: 'Bronze coins',
-                keyboardType: TextInputType.number,
-                errorText: _bronzeCoinsError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomInputField(
-                controller: _silverCoinsController,
-                labelText: 'Silver coins',
-                hintText: 'Silver coins',
-                keyboardType: TextInputType.number,
-                errorText: _silverCoinsError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomInputField(
-                controller: _goldenCoinsController,
-                labelText: 'Golden coins',
-                hintText: 'Golden coins',
-                keyboardType: TextInputType.number,
-                errorText: _goldenCoinsError,
-              ),
-              const SizedBox(height: 24.0),
-
-              CustomDropdownField(
-                value: _selectedOxfordDominoes,
-                hintText: 'OXFORD DOMINOES & BOOKWORMS Quick Starter Part',
-                items: _oxfordDominoesOptions,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedOxfordDominoes = newValue;
-                    _oxfordDominoesError = null;
-                  });
-                },
-                errorText: _oxfordDominoesError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomDropdownField(
-                value: _selectedOxfordReadDiscover,
-                hintText: 'OXFORD READ & DISCOVER 1-6 Level 1/R&D',
-                items: _oxfordReadDiscoverOptions,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedOxfordReadDiscover = newValue;
-                    _oxfordReadDiscoverError = null;
-                  });
-                },
-                errorText: _oxfordReadDiscoverError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomDropdownField(
-                value: _selectedNationalGeographic,
-                hintText: 'NATIONAL GEOGRAPHIC A2 Part 1/N.G',
-                items: _nationalGeographicOptions,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedNationalGeographic = newValue;
-                    _nationalGeographicError = null;
-                  });
-                },
-                errorText: _nationalGeographicError,
-              ),
-              const SizedBox(height: 16.0),
-              CustomDropdownField(
-                value: _selectedListeningSkill,
-                hintText: 'LISTENING SKILL Begginers/L.S',
-                items: _listeningSkillOptions,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedListeningSkill = newValue;
-                    _listeningSkillError = null;
-                  });
-                },
-                errorText: _listeningSkillError,
-              ),
-              const SizedBox(height: 24.0),
-
-              ElevatedButton(
-                onPressed: () {
-                  if (_validateForm()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF673AB7),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                  child: const Text(
+                    'Create account',
+                    style: TextStyle(fontSize: 18.0),
                   ),
                 ),
-                child: const Text(
-                  'Create account',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
