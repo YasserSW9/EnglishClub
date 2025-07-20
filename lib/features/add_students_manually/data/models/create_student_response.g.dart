@@ -12,18 +12,14 @@ CreateStudentResponse _$CreateStudentResponseFromJson(
   message: json['message'] as String?,
   data: json['data'] == null
       ? null
-      : CreateStudentResponseData.fromJson(
-          json['data'] as Map<String, dynamic>,
-        ),
+      : Data.fromJson(json['data'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$CreateStudentResponseToJson(
   CreateStudentResponse instance,
 ) => <String, dynamic>{'message': instance.message, 'data': instance.data};
 
-CreateStudentResponseData _$CreateStudentResponseDataFromJson(
-  Map<String, dynamic> json,
-) => CreateStudentResponseData(
+Data _$DataFromJson(Map<String, dynamic> json) => Data(
   student: json['student'] == null
       ? null
       : Student.fromJson(json['student'] as Map<String, dynamic>),
@@ -32,9 +28,7 @@ CreateStudentResponseData _$CreateStudentResponseDataFromJson(
       : Account.fromJson(json['account'] as Map<String, dynamic>),
 );
 
-Map<String, dynamic> _$CreateStudentResponseDataToJson(
-  CreateStudentResponseData instance,
-) => <String, dynamic>{
+Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
   'student': instance.student,
   'account': instance.account,
 };

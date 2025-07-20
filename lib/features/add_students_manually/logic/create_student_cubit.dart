@@ -32,6 +32,7 @@ class CreateStudentCubit extends Cubit<CreateStudentState> {
           silverCoins: int.tryParse(silverCoinsController.text),
           bronzeCoins: int.tryParse(bronzeCoinsController.text),
           borrowLimit: int.tryParse(borrowLimitController.text),
+          progresses: [],
         );
 
     final response = await _createStudentRepo.createStudent(
@@ -45,7 +46,7 @@ class CreateStudentCubit extends Cubit<CreateStudentState> {
       failure: (error) {
         emit(
           CreateStudentState.error(
-            error: error.apiErrorModel.message ?? 'error',
+            error: error.apiErrorModel.message ?? 'Error',
           ),
         );
       },

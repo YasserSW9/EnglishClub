@@ -1,13 +1,11 @@
-// lib/features/add_students_manually/data/models/create_student_response.dart
-
 import 'package:json_annotation/json_annotation.dart';
 
-part 'create_student_response.g.dart'; // This file will be generated automatically
+part 'create_student_response.g.dart';
 
 @JsonSerializable()
 class CreateStudentResponse {
   String? message;
-  CreateStudentResponseData? data;
+  Data? data;
 
   CreateStudentResponse({this.message, this.data});
 
@@ -18,32 +16,31 @@ class CreateStudentResponse {
 }
 
 @JsonSerializable()
-class CreateStudentResponseData {
+class Data {
   Student? student;
   Account? account;
 
-  CreateStudentResponseData({this.student, this.account});
+  Data({this.student, this.account});
 
-  factory CreateStudentResponseData.fromJson(Map<String, dynamic> json) =>
-      _$CreateStudentResponseDataFromJson(json);
+  factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CreateStudentResponseDataToJson(this);
+  Map<String, dynamic> toJson() => _$DataToJson(this);
 }
 
 @JsonSerializable()
 class Student {
   String? name;
-  @JsonKey(name: 'g_class_id')
+  @JsonKey(name: "g_class_id")
   int? gClassId;
-  @JsonKey(name: 'borrow_limit')
+  @JsonKey(name: "borrow_limit")
   int? borrowLimit;
   int? id;
   int? score;
-  @JsonKey(name: 'golden_coins')
+  @JsonKey(name: "golden_coins")
   int? goldenCoins;
-  @JsonKey(name: 'silver_coins')
+  @JsonKey(name: "silver_coins")
   int? silverCoins;
-  @JsonKey(name: 'bronze_coins')
+  @JsonKey(name: "bronze_coins")
   int? bronzeCoins;
 
   Student({
