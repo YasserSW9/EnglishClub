@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'create_student_response.g.dart';
+part 'create_student_response.g.dart'; // Make sure this matches your file name
 
 @JsonSerializable()
 class CreateStudentResponse {
@@ -11,8 +11,6 @@ class CreateStudentResponse {
 
   factory CreateStudentResponse.fromJson(Map<String, dynamic> json) =>
       _$CreateStudentResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CreateStudentResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -23,8 +21,6 @@ class Data {
   Data({this.student, this.account});
 
   factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DataToJson(this);
 }
 
 @JsonSerializable()
@@ -56,8 +52,6 @@ class Student {
 
   factory Student.fromJson(Map<String, dynamic> json) =>
       _$StudentFromJson(json);
-
-  Map<String, dynamic> toJson() => _$StudentToJson(this);
 }
 
 @JsonSerializable()
@@ -69,6 +63,4 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) =>
       _$AccountFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AccountToJson(this);
 }

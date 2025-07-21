@@ -7,7 +7,6 @@ import 'package:english_club/features/manage_grades_and_classes/ui/widgets/Manag
 import 'package:english_club/features/manage_grades_and_classes/ui/widgets/grades_shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:english_club/core/helpers/extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_state.dart';
@@ -156,7 +155,6 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
             },
           ),
 
-          // 🚀 BlocListener الجديد لـ DeleteGradeCubit
           BlocListener<DeleteGradeCubit, DeleteGradeState>(
             listener: (context, state) {
               state.whenOrNull(
@@ -179,7 +177,6 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                     title: 'Success!',
                     desc: 'Grade deleted successfully.',
                     btnOkOnPress: () {
-                      // بعد الحذف بنجاح، أعد جلب قائمة الصفوف المحدثة
                       context.read<GradesCubit>().emitGetGrades();
                     },
                   ).show();
@@ -274,14 +271,7 @@ class _ManageGradesAndClassesState extends State<ManageGradesAndClasses> {
                       )
                         GradeAndSectionCard(
                           grade: _gradesFromApi[gradeIndex],
-                          // 🗑️ تم إزالة onGradeDeleted حيث أن الـ Cubit سيتولى الحذف
-                          // onGradeDeleted: (gradeToDelete) {
-                          //   setState(() {
-                          //     _gradesFromApi.removeWhere(
-                          //       (g) => g.id == gradeToDelete.id,
-                          //     );
-                          //   });
-                          // },
+
                           onSectionDeleted: (sectionToDelete, gradeId) {
                             setState(() {
                               final gradeToUpdate = _gradesFromApi.firstWhere(

@@ -71,7 +71,6 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
 
     _selectedClassType = 'temp1';
     _selectedGradeType = 'Temporary';
-    // تهيئة gClassIdController بالقيمة الافتراضية عند بدء التشغيل
     context.read<CreateStudentCubit>().gClassIdController.text =
         _getGradeId(_selectedGradeType)?.toString() ?? '';
   }
@@ -81,19 +80,18 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
     super.dispose();
   }
 
-  // دالة مساعدة لتحويل اسم الدرجة إلى ID رقمي بناءً على استجابة الـ API
   int? _getGradeId(String? gradeName) {
     switch (gradeName) {
       case 'Temporary':
-        return 1; // ID 1 من الـ API
+        return 1;
       case 'Grade 7':
-        return 2; // ID 2 من الـ API
+        return 2;
       case 'Grade 8':
-        return 3; // ID 3 من الـ API
+        return 3;
       case 'Grade 9':
-        return 4; // ID 4 من الـ API
+        return 4;
       case 'Grade 10':
-        return 5; // ID 5 من الـ API
+        return 5;
       default:
         return null;
     }
@@ -112,7 +110,7 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
           },
         ),
         title: const Text(
-          'Create Student account',
+          'Create Student Account',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF673AB7),
@@ -125,14 +123,18 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
           listener: (context, state) {
             state.whenOrNull(
               loading: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Creating account...')),
-                );
+                AwesomeDialog(
+                  context: context,
+                  dialogType: DialogType.info,
+                  animType: AnimType.rightSlide,
+                  title: 'Processing...',
+                  desc: 'Creating account, please wait.',
+                  autoHide: Duration(seconds: 5),
+                  showCloseIcon: false,
+                ).show();
               },
               success: (data) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                // الوصول الصحيح للبيانات هو data.data?.account
+                Navigator.of(context).pop();
                 final username =
                     data.data?.account?.username ?? 'Not available';
                 final password =
@@ -142,18 +144,21 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
                   context: context,
                   dialogType: DialogType.success,
                   animType: AnimType.rightSlide,
-                  title: 'Account Created Successfully! 🎉',
+                  title: 'Account Created Successfully!',
                   desc: 'Username: $username\nPassword: $password',
-                  btnOkOnPress: () {
-                    // يمكنك إضافة أي منطق هنا عند إغلاق الـ dialog
-                  },
+                  btnOkOnPress: () {},
                 ).show();
               },
               error: (error) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Error: $error 😞')));
+                Navigator.of(context).pop();
+                AwesomeDialog(
+                  context: context,
+                  dialogType: DialogType.error,
+                  animType: AnimType.rightSlide,
+                  title: 'Error! ',
+                  desc: 'Error: $error',
+                  btnOkOnPress: () {},
+                ).show();
               },
             );
           },
@@ -163,8 +168,14 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
               children: [
                 CustomInputField(
                   controller: createStudentCubit.nameController,
-                  labelText: 'Student name',
-                  hintText: 'Student name',
+                  labelText: 'Student Name',
+                  hintText: 'Student Name',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter student name';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 15.0),
                 Row(
@@ -190,7 +201,6 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
                         onChanged: (newValue) {
                           setState(() {
                             _selectedGradeType = newValue;
-                            // تحديث gClassIdController هنا عند تغيير الدرجة
                             createStudentCubit.gClassIdController.text =
                                 _getGradeId(newValue)?.toString() ?? '';
                           });
@@ -202,37 +212,82 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
                 const SizedBox(height: 16.0),
                 CustomInputField(
                   controller: createStudentCubit.scoreController,
-                  labelText: 'Student score',
-                  hintText: 'Student score',
+                  labelText: 'Student Score',
+                  hintText: 'Student Score',
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter student score';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomInputField(
                   controller: createStudentCubit.borrowLimitController,
-                  labelText: 'Borrow limit',
-                  hintText: 'Borrow limit',
+                  labelText: 'Borrow Limit',
+                  hintText: 'Borrow Limit',
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter borrow limit';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomInputField(
                   controller: createStudentCubit.bronzeCoinsController,
-                  labelText: 'Bronze coins',
-                  hintText: 'Bronze coins',
+                  labelText: 'Bronze Coins',
+                  hintText: 'Bronze Coins',
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter bronze coins';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomInputField(
                   controller: createStudentCubit.silverCoinsController,
-                  labelText: 'Silver coins',
-                  hintText: 'Silver coins',
+                  labelText: 'Silver Coins',
+                  hintText: 'Silver Coins',
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter silver coins';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomInputField(
                   controller: createStudentCubit.goldenCoinsController,
-                  labelText: 'Golden coins',
-                  hintText: 'Golden coins',
+                  labelText: 'Golden Coins',
+                  hintText: 'Golden Coins',
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter golden coins';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24.0),
 
@@ -284,11 +339,19 @@ class _AddStudentsManuallyState extends State<AddStudentsManually> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // تأكيد أن gClassIdController لديه قيمة بناءً على الاختيار الحالي
                       createStudentCubit.gClassIdController.text =
                           _getGradeId(_selectedGradeType)?.toString() ?? '';
 
                       createStudentCubit.emitCreateStudentLoaded();
+                    } else {
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.warning,
+                        animType: AnimType.rightSlide,
+                        title: 'Validation Error',
+                        desc: 'Please fill all required fields correctly.',
+                        btnOkOnPress: () {},
+                      ).show();
                     }
                   },
                   style: ElevatedButton.styleFrom(

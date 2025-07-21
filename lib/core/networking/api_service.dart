@@ -90,7 +90,7 @@ abstract class ApiService {
     @Path("delete_grade_id") String deleteGradeId,
   );
   // create student
-  @POST(ApiConstants.createGrades)
+  @POST("admin/students")
   Future<CreateStudentResponse> createStudent(
     @Body() CreateStudentRequestBody createStudentRequestBody,
   );

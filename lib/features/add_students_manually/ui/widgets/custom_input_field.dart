@@ -7,6 +7,7 @@ class CustomInputField extends StatelessWidget {
   final String hintText;
   final TextInputType keyboardType;
   final String? errorText;
+  final String? Function(String?)? validator;
 
   const CustomInputField({
     super.key,
@@ -15,6 +16,7 @@ class CustomInputField extends StatelessWidget {
     required this.hintText,
     this.keyboardType = TextInputType.text,
     this.errorText,
+    this.validator,
   });
 
   @override
@@ -23,6 +25,7 @@ class CustomInputField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
+          validator: validator,
           controller: controller,
           keyboardType: keyboardType,
           decoration: InputDecoration(
@@ -58,6 +61,7 @@ class CustomInputField extends StatelessWidget {
             ),
           ),
         ),
+
         if (errorText != null)
           Padding(
             padding: const EdgeInsets.only(left: 16.0, top: 8.0),
