@@ -67,14 +67,20 @@ class _AddStudentsByExcelState extends State<AddStudentsByExcel> {
                         _selectedGrade = newValue;
                       });
                     },
-                    items: <String>['Temporary', 'Permanent', 'Contract']
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items:
+                        <String>[
+                          'Temporary',
+                          'Grade 7',
+                          'Grade 8',
+                          'Grade 8',
+                          'Grade 9',
+                          'Grade 10',
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
                           );
-                        })
-                        .toList(),
+                        }).toList(),
                   ),
                 ),
               ),
