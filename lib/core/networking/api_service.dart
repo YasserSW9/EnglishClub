@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:english_club/core/networking/api_contants.dart';
 import 'package:english_club/features/add_students_manually/data/models/create_student_request_body.dart';
 import 'package:english_club/features/add_students_manually/data/models/create_student_response.dart';
+import 'package:english_club/features/english_club/data/models/create_section_request_body.dart';
+import 'package:english_club/features/english_club/data/models/create_section_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_request_body.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/create_grade_response.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/models/delete_grade_response.dart';
@@ -93,5 +95,10 @@ abstract class ApiService {
   @POST("admin/students")
   Future<CreateStudentResponse> createStudent(
     @Body() CreateStudentRequestBody createStudentRequestBody,
+  );
+  // create section
+  @POST(ApiConstants.createSection)
+  Future<CreateSectionResponse> createSection(
+    @Body() CreateSectionRequestBody createSectionRequestBody,
   );
 }

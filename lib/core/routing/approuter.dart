@@ -3,6 +3,7 @@ import 'package:english_club/core/routing/routes.dart';
 import 'package:english_club/features/add_students_by_excel/ui/add_students_by_excel.dart';
 import 'package:english_club/features/add_students_manually/logic/create_student_cubit.dart';
 import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
+import 'package:english_club/features/english_club/logic/create_section_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
@@ -75,7 +76,12 @@ class AppRouter {
       case Routes.addStudents:
         return MaterialPageRoute(builder: (_) => AddStudents());
       case Routes.englishclub:
-        return MaterialPageRoute(builder: (_) => Englishclub());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<CreateSectionCubit>(),
+            child: Englishclub(),
+          ),
+        );
       case Routes.addStudentsByExcel:
         return MaterialPageRoute(builder: (_) => AddStudentsByExcel());
       case Routes.addStudentsManually:
