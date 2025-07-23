@@ -4,6 +4,7 @@ import 'package:english_club/features/add_students_by_excel/ui/add_students_by_e
 import 'package:english_club/features/add_students_manually/logic/create_student_cubit.dart';
 import 'package:english_club/features/add_students_manually/ui/add_students_manually.dart';
 import 'package:english_club/features/english_club/logic/create_section_cubit.dart';
+import 'package:english_club/features/english_club/logic/english_club_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/create_grades_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/delete_grade_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/logic/cubit/edit_grade_cubit.dart';
@@ -20,6 +21,7 @@ import 'package:english_club/features/login/logic/cubit/login_cubit.dart'
 import 'package:english_club/features/login/ui/login_Screen.dart';
 
 import 'package:english_club/features/onbording/ui/onboarding.dart';
+import 'package:english_club/features/road_map/ui/road_map.dart';
 import 'package:english_club/features/student_prizes/logic/cubit/prizes_cubit.dart';
 import 'package:english_club/features/student_prizes/ui/student_prizes.dart';
 import 'package:english_club/features/add_students/ui/add_students.dart';
@@ -77,8 +79,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => AddStudents());
       case Routes.englishclub:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<CreateSectionCubit>(),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<CreateSectionCubit>()),
+              BlocProvider(create: (context) => getIt<EnglishClubCubit>()),
+            ],
             child: Englishclub(),
           ),
         );
@@ -103,6 +108,8 @@ class AppRouter {
             child: ManageGradesAndClasses(),
           ),
         );
+      case Routes.RoadMap:
+        return MaterialPageRoute(builder: (_) => RoadMap());
       default:
         return null;
     }

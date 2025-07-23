@@ -3,12 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:english_club/core/helpers/extensions.dart'; // Ensure correct path
-import 'package:flutter_bloc/flutter_bloc.dart'; // For BlocProvider.of
+import 'package:english_club/core/helpers/extensions.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Import the Cubit and RequestBody
-import 'package:english_club/features/english_club/data/models/create_section_request_body.dart'; // Ensure correct path
-import 'package:english_club/features/english_club/logic/create_section_cubit.dart'; // Ensure correct path
+import 'package:english_club/features/english_club/logic/create_section_cubit.dart';
 
 class EnglishClubAppBar extends StatelessWidget implements PreferredSizeWidget {
   const EnglishClubAppBar({Key? key}) : super(key: key);

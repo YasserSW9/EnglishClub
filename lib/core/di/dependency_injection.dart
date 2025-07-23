@@ -3,7 +3,9 @@ import 'package:english_club/core/networking/dio_factory.dart';
 import 'package:english_club/features/add_students_manually/data/repos/create_student_repo.dart';
 import 'package:english_club/features/add_students_manually/logic/create_student_cubit.dart';
 import 'package:english_club/features/english_club/data/repos/create_section_repo.dart';
+import 'package:english_club/features/english_club/data/repos/english_club_repo.dart';
 import 'package:english_club/features/english_club/logic/create_section_cubit.dart';
+import 'package:english_club/features/english_club/logic/english_club_cubit.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/repos/create_grade_repo.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/repos/delete_grade_repo.dart';
 import 'package:english_club/features/manage_grades_and_classes/data/repos/edit_grade_repo.dart';
@@ -87,4 +89,7 @@ Future<void> setupGetIt() async {
     () => CreateSectionRepo(getIt()),
   );
   getIt.registerFactory<CreateSectionCubit>(() => CreateSectionCubit(getIt()));
+  // get english club
+  getIt.registerLazySingleton<EnglishClubRepo>(() => EnglishClubRepo(getIt()));
+  getIt.registerFactory<EnglishClubCubit>(() => EnglishClubCubit(getIt()));
 }

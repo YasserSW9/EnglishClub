@@ -9,4 +9,5 @@ class Routes {
   static const String addStudentsByExcel = '/addStudentsByExcel';
   static const String addStudentsManually = '/addStudentsManually';
   static const String ManageGradesAndClassess = '/ManageGradesAndClassess';
+  static const String RoadMap = '/RoadMap';
 }
